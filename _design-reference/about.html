@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>About · impuls/studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0a;--ink:#f4f1ea;--muted:#7a7770;--acid:#d6ff3d;--line:#1c1c1c;--warm:#ff5a1f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;scroll-behavior:smooth}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--acid);color:#000}
+
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.04;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/></svg>")}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:22px 32px;mix-blend-mode:difference}
+  .logo{font-family:'Instrument Serif',serif;font-size:26px;letter-spacing:-.02em}
+  .logo i{font-style:italic;color:var(--acid)}
+  nav ul{display:flex;gap:28px;list-style:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  nav ul li::before{content:"→ ";opacity:.4}
+  nav ul li.on::before{color:var(--acid);opacity:1}
+
+  /* hero */
+  .hero{padding:160px 32px 80px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .crumbs{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:80px}
+  .crumbs a:hover{color:var(--acid)}
+  .crumbs span{margin:0 10px;opacity:.4}
+  .hero h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(80px,15vw,260px);line-height:.82;letter-spacing:-.04em;margin-bottom:48px}
+  .hero h1 em{font-style:italic;color:var(--acid)}
+  .hero h1 .strike{position:relative;display:inline-block}
+  .hero h1 .strike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:8px;background:var(--warm);transform:rotate(-1.5deg)}
+  .hero-foot{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:60px;padding-top:32px;border-top:1px solid var(--line)}
+  .hero-foot p{font-size:20px;line-height:1.5;max-width:560px;color:var(--ink)}
+  .hero-foot p span{color:var(--muted)}
+  .hero-foot .meta{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);line-height:1.9;text-align:right}
+  .hero-foot .meta b{color:var(--ink);font-weight:400}
+
+  /* numbers strip */
+  .nums{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line)}
+  .num{padding:48px 32px;border-right:1px solid var(--line)}
+  .num:last-child{border-right:0}
+  .num .v{font-family:'Instrument Serif',serif;font-size:clamp(48px,5.5vw,84px);line-height:1;letter-spacing:-.03em;margin-bottom:10px}
+  .num .v em{color:var(--acid);font-style:italic}
+  .num .v sup{font-size:.45em;color:var(--muted);vertical-align:top;font-style:normal}
+  .num .k{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted)}
+
+  /* section base */
+  section.s{padding:140px 32px;border-bottom:1px solid var(--line)}
+  .s-grid{display:grid;grid-template-columns:280px 1fr;gap:60px}
+  .s-tag{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);position:sticky;top:120px;align-self:start}
+  .s-tag::before{content:"§ ";color:var(--acid)}
+  .s-body h2{font-family:'Instrument Serif',serif;font-size:clamp(48px,6.5vw,96px);font-weight:400;letter-spacing:-.025em;line-height:.95;margin-bottom:40px}
+  .s-body h2 em{color:var(--acid);font-style:italic}
+  .s-body p.big{font-family:'Instrument Serif',serif;font-size:clamp(26px,3vw,42px);line-height:1.2;letter-spacing:-.01em;color:var(--ink);max-width:900px;margin-bottom:28px}
+  .s-body p.big em{color:var(--acid);font-style:italic}
+  .s-body p{font-size:17px;line-height:1.55;color:var(--ink);max-width:720px;margin-bottom:18px}
+  .s-body p .muted{color:var(--muted)}
+
+  /* timeline */
+  .tl{margin-top:60px;position:relative}
+  .tl::before{content:"";position:absolute;left:140px;top:0;bottom:0;width:1px;background:var(--line)}
+  .tl-row{display:grid;grid-template-columns:140px 1fr;gap:60px;padding:28px 0;align-items:start;position:relative}
+  .tl-row::before{content:"";position:absolute;left:136px;top:38px;width:9px;height:9px;background:var(--bg);border:1px solid var(--muted);border-radius:50%}
+  .tl-row.now::before{background:var(--acid);border-color:var(--acid);box-shadow:0 0 0 6px rgba(214,255,61,.15)}
+  .tl-year{font-family:'Instrument Serif',serif;font-size:48px;line-height:1;letter-spacing:-.02em;color:var(--muted);font-style:italic}
+  .tl-row.now .tl-year{color:var(--acid)}
+  .tl-body h4{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;line-height:1.15;margin-bottom:8px;letter-spacing:-.01em}
+  .tl-body p{font-size:15px;line-height:1.55;color:var(--muted);max-width:620px}
+
+  /* team */
+  .team{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+  .member{padding:32px;border:1px solid var(--line);border-radius:16px;background:#101010;transition:.3s;position:relative;overflow:hidden}
+  .member:hover{border-color:var(--ink);transform:translateY(-4px)}
+  .member .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#1f1f1f,#0a0a0a);border:1px solid var(--line);margin-bottom:24px;display:grid;place-items:center;font-family:'Instrument Serif',serif;font-size:30px;color:var(--muted);font-style:italic}
+  .member.acid .avatar{background:var(--acid);color:#000;border-color:var(--acid)}
+  .member.warm .avatar{background:var(--warm);color:#000;border-color:var(--warm)}
+  .member h4{font-family:'Instrument Serif',serif;font-size:32px;font-weight:400;line-height:1;letter-spacing:-.015em;margin-bottom:6px}
+  .member .role{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:24px}
+  .member p{font-size:14px;line-height:1.55;color:var(--muted);margin-bottom:20px}
+  .member .links{display:flex;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .member .links a{padding:6px 10px;border:1px solid var(--line);border-radius:4px;transition:.2s}
+  .member .links a:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* principles */
+  .principles{display:flex;flex-direction:column;margin-top:40px}
+  .pr{display:grid;grid-template-columns:80px 1fr 200px;gap:32px;padding:36px 0;border-top:1px solid var(--line);align-items:start;transition:.3s;position:relative}
+  .pr:last-child{border-bottom:1px solid var(--line)}
+  .pr:hover{padding-left:24px}
+  .pr::before{content:"";position:absolute;left:0;top:50%;width:0;height:1px;background:var(--acid);transition:.3s}
+  .pr:hover::before{width:18px}
+  .pr .n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:.05em;padding-top:8px}
+  .pr h4{font-family:'Instrument Serif',serif;font-size:clamp(28px,3.4vw,44px);font-weight:400;line-height:1.15;letter-spacing:-.015em;margin-bottom:10px}
+  .pr:hover h4 em{color:var(--acid)}
+  .pr h4 em{font-style:italic;color:var(--ink);transition:.3s}
+  .pr p{color:var(--muted);font-size:15px;line-height:1.55;max-width:620px}
+  .pr .anti{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--warm);text-align:right;line-height:1.7}
+  .pr .anti b{display:block;color:var(--muted);margin-bottom:4px;font-weight:400}
+
+  /* clients */
+  .clients{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:48px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+  .client{padding:40px 24px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:24px;color:var(--muted);transition:.2s;cursor:default;font-style:italic;letter-spacing:-.01em}
+  .client:hover{color:var(--ink);background:#101010}
+  .client.acid{color:var(--acid)}
+
+  /* workspace block */
+  .workspace{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:60px}
+  .ws-card{padding:40px;border:1px solid var(--line);border-radius:16px;background:#101010;position:relative;overflow:hidden;min-height:280px;display:flex;flex-direction:column;justify-content:space-between}
+  .ws-card.acid{background:var(--acid);color:#000;border-color:var(--acid)}
+  .ws-card.warm{background:var(--warm);color:#000;border-color:var(--warm)}
+  .ws-card .label{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted)}
+  .ws-card.acid .label,.ws-card.warm .label{color:rgba(0,0,0,.55)}
+  .ws-card h4{font-family:'Instrument Serif',serif;font-size:clamp(34px,4vw,52px);font-weight:400;line-height:1.05;letter-spacing:-.02em}
+  .ws-card h4 em{font-style:italic}
+  .ws-card .meta-line{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:14px}
+  .ws-card.acid .meta-line,.ws-card.warm .meta-line{border-color:rgba(0,0,0,.15);color:rgba(0,0,0,.6)}
+  .ws-card .meta-line b{color:var(--ink);font-weight:400}
+  .ws-card.acid .meta-line b,.ws-card.warm .meta-line b{color:#000}
+
+  /* quote */
+  .quote{padding:140px 32px;text-align:center;border-bottom:1px solid var(--line)}
+  .quote blockquote{font-family:'Instrument Serif',serif;font-size:clamp(40px,5.5vw,80px);line-height:1.1;letter-spacing:-.02em;max-width:1200px;margin:0 auto 40px;font-weight:400}
+  .quote blockquote em{color:var(--acid);font-style:italic}
+  .quote .author{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted)}
+
+  /* final */
+  .final{padding:160px 32px;text-align:center;border-bottom:1px solid var(--line);position:relative}
+  .final h2{font-family:'Instrument Serif',serif;font-size:clamp(72px,11vw,180px);font-weight:400;letter-spacing:-.035em;line-height:.85;margin-bottom:48px}
+  .final h2 em{color:var(--acid);font-style:italic}
+  .final .cta{display:inline-flex;align-items:center;gap:14px;padding:22px 38px;background:var(--acid);color:#000;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:.18em;font-weight:600;transition:.2s}
+  .final .cta:hover{background:var(--ink);transform:translateY(-2px);box-shadow:0 12px 36px rgba(244,241,234,.12)}
+  .final .meta{margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  .final .meta b{color:var(--ink);font-weight:400}
+
+  footer{padding:32px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  footer a:hover{color:var(--acid)}
+
+  @keyframes pulse{50%{opacity:.3}}
+
+  @media (max-width:1000px){
+    .team,.workspace,.clients{grid-template-columns:1fr 1fr}
+    .nums{grid-template-columns:1fr 1fr}
+    .num{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  }
+  @media (max-width:700px){
+    .s-grid{grid-template-columns:1fr}
+    .s-tag{position:static}
+    .hero-foot{grid-template-columns:1fr}
+    .hero-foot .meta{text-align:left}
+    .tl::before{left:90px}
+    .tl-row{grid-template-columns:90px 1fr;gap:24px}
+    .tl-row::before{left:86px}
+    .team,.workspace,.clients{grid-template-columns:1fr}
+    .pr{grid-template-columns:1fr}
+    .pr .anti{text-align:left}
+    nav ul{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><a href="index.html">impuls<i>/studio</i></a></div>
+  <ul>
+    <li><a href="work.html">work</a></li>
+    <li><a href="index.html#services">services</a></li>
+    <li class="on"><a href="about.html">about</a></li>
+    <li><a href="index.html#start">contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="crumbs">
+    <a href="index.html">index</a><span>/</span><span style="color:var(--ink)">about</span>
+  </div>
+
+  <h1>
+    we're <em>three</em> people<br>
+    who got <span class="strike">tired</span> <em>obsessed</em><br>
+    with crypto <em>UI</em>.
+  </h1>
+
+  <div class="hero-foot">
+    <p>impuls / studio — небольшая независимая команда: трейдер, дизайнер и инженер. <span>Делаем продукты для тех, кто работает на рынке каждый день: терминалы, бот-инфра, лендинги под токен-лонч. Без агентского пинг-понга, без stock-3D, без «мы вернёмся через неделю».</span></p>
+    <div class="meta">
+      <div>founded · <b>2024</b></div>
+      <div>headcount · <b>3 + 2 freelance</b></div>
+      <div>location · <b>remote · UTC+3</b></div>
+      <div>status · <b style="color:var(--acid)">● accepting Q3 / 2026</b></div>
+    </div>
+  </div>
+</section>
+
+<div class="nums">
+  <div class="num"><div class="v"><em>17</em></div><div class="k">shipped projects</div></div>
+  <div class="num"><div class="v">2<em>.5</em></div><div class="k">years live</div></div>
+  <div class="num"><div class="v"><em>$3M</em><sup>+</sup></div><div class="k">turnover on our products</div></div>
+  <div class="num"><div class="v">12</div><div class="k">live in production</div></div>
+  <div class="num"><div class="v"><em>0</em></div><div class="k">stock 3D blobs used</div></div>
+</div>
+
+<!-- story -->
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">[ 01 ] / story</div>
+    <div class="s-body">
+      <h2>как мы тут <em>оказались</em>.</h2>
+      <p class="big">Мы начали со своей боли. <em>Трейдили</em> сами — и каждый раз бесили интерфейсы, в которых критическая цифра спрятана под аккордеоном, а кнопка «закрыть позицию» одного цвета с фоном.</p>
+      <p>В 2024 собрали первый внутренний инструмент — бот с админкой для управления стратегией. Через месяц нас попросили сделать «то же самое, но для друга». Через три — пришёл первый платный проект.</p>
+      <p class="muted">С тех пор работаем по той же модели: маленькая команда, прямой контакт с фаундером, никакой агентской прослойки. Берём 4 проекта в квартал, отвечаем на брифы за 24 часа.</p>
+    </div>
+  </div>
+</section>
+
+<!-- timeline -->
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">[ 02 ] / timeline</div>
+    <div class="s-body">
+      <h2>две с <em>половиной</em> года.</h2>
+
+      <div class="tl">
+        <div class="tl-row">
+          <div class="tl-year">'24</div>
+          <div class="tl-body">
+            <h4>Q1 — собрали первый внутренний бот для себя</h4>
+            <p>Python-движок + ручная админка. Запустили на $5k капитала, чтобы проверить идею. За 3 месяца удвоили.</p>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-year">'24</div>
+          <div class="tl-body">
+            <h4>Q3 — первый платный кейс (Token Studio)</h4>
+            <p>Дизайн-система для агентства токен-лоунчей. Поняли что хотим в эту нишу — там есть деньги и есть боль.</p>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-year">'25</div>
+          <div class="tl-body">
+            <h4>Q1 — нанял второго инженера, выпустили Hedge.ui</h4>
+            <p>Хеджирующий терминал на 200 инструментов. 1500+ WS-сообщений в секунду на одном клиенте — и оно не лагает.</p>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-year">'25</div>
+          <div class="tl-body">
+            <h4>Q4 — старт работы над Impuls-bot v2</h4>
+            <p>Собственный продукт — auto-trading платформа с бэктестом. Запуск в проде через 16 недель.</p>
+          </div>
+        </div>
+        <div class="tl-row now">
+          <div class="tl-year">now</div>
+          <div class="tl-body">
+            <h4>Q2 '26 — Impuls-bot v2.6 в проде, открыли 4 слота на Q3</h4>
+            <p>Релиз с подтверждением сигналов и параллельным бэктестом. Команда — 3 человека на full-time, 2 фрилансера на бренд/иллюстрации.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- team -->
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">[ 03 ] / team</div>
+    <div class="s-body">
+      <h2>трое, кто это <em>делает</em>.</h2>
+      <p class="muted">Маленькая команда — это не баг, а фича. Каждый из нас разговаривает с клиентом напрямую, без менеджеров-переводчиков. Хотите узнать, как мы делаем decision — спросите в Telegram.</p>
+
+      <div class="team">
+        <div class="member acid">
+          <div class="avatar">A</div>
+          <h4>Андрей К.</h4>
+          <div class="role">trader · founder</div>
+          <p>8 лет в трейдинге, до студии — quant-research в одном из московских проп-десков. Отвечает за продуктовое видение и стратегические части движков.</p>
+          <div class="links"><a href="#">telegram</a><a href="#">linkedin</a></div>
+        </div>
+
+        <div class="member">
+          <div class="avatar">М</div>
+          <h4>Мария Л.</h4>
+          <div class="role">design lead</div>
+          <p>Бывший арт-директор fintech-стартапа. Десять лет рисует интерфейсы для финансовых продуктов. Тащит на себе всё — от иконок до design-system.</p>
+          <div class="links"><a href="#">dribbble</a><a href="#">read.cv</a></div>
+        </div>
+
+        <div class="member warm">
+          <div class="avatar">Д</div>
+          <h4>Денис П.</h4>
+          <div class="role">engineering</div>
+          <p>Full-stack с уклоном в реалтайм-инфру. Python/FastAPI, React, WebSocket-фанаут. Отвечает за всё, что должно не падать при 1500 msg/s.</p>
+          <div class="links"><a href="#">github</a><a href="#">twitter</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- quote -->
+<section class="quote">
+  <blockquote>
+    «Маленькая студия — это<br>
+    <em>скорость</em> + <em>вкус</em>,<br>
+    которые не пройдут через комитет.»
+  </blockquote>
+  <div class="author">manifesto · clause 0</div>
+</section>
+
+<!-- principles -->
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">[ 04 ] / principles</div>
+    <div class="s-body">
+      <h2>во что <em>верим</em>.</h2>
+      <p class="muted">Не правила — компас. Когда выбор между «правильно» и «удобно» — выбираем по этому списку.</p>
+
+      <div class="principles">
+        <div class="pr">
+          <span class="n">01</span>
+          <div>
+            <h4><em>Trader-first</em>, не investor-first.</h4>
+            <p>Делаем для тех, кто открывает приложение в 3 ночи. Презентационные mockup-ы — потом.</p>
+          </div>
+          <div class="anti"><b>against:</b>«красивый дашборд для пресс-релиза»</div>
+        </div>
+        <div class="pr">
+          <span class="n">02</span>
+          <div>
+            <h4>Speed beats <em>polish</em>, then polish.</h4>
+            <p>Сначала рабочий MVP в проде, потом доводим. Polish без проверки рынком — это самообман.</p>
+          </div>
+          <div class="anti"><b>against:</b>«ещё 2 недели на проработку»</div>
+        </div>
+        <div class="pr">
+          <span class="n">03</span>
+          <div>
+            <h4>Numbers are <em>typography</em>.</h4>
+            <p>В крипто-UI цифры — главный контент. Они должны быть в моноширинном, выровнены, с правильным интервалом. Это не деталь.</p>
+          </div>
+          <div class="anti"><b>against:</b>«цифры как обычный текст»</div>
+        </div>
+        <div class="pr">
+          <span class="n">04</span>
+          <div>
+            <h4>If it doesn't load in <em>2s</em>, it's broken.</h4>
+            <p>Никаких 3D-сцен без preload. Никаких 500-килобайтных шрифтов. First paint — наша SLO.</p>
+          </div>
+          <div class="anti"><b>against:</b>«загрузится — подождут»</div>
+        </div>
+        <div class="pr">
+          <span class="n">05</span>
+          <div>
+            <h4>Дальше — <em>прямой</em> контакт.</h4>
+            <p>Отвечаем в DM, не в Jira. Brief — это разговор, не PDF-форма.</p>
+          </div>
+          <div class="anti"><b>against:</b>«передам менеджеру»</div>
+        </div>
+        <div class="pr">
+          <span class="n">06</span>
+          <div>
+            <h4>Open-source <em>by default</em>.</h4>
+            <p>Внутренние утилиты — на гитхабе. Не потому что должно, а потому что хочется учиться у комьюнити.</p>
+          </div>
+          <div class="anti"><b>against:</b>«это наше ноу-хау»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- clients -->
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">[ 05 ] / clients</div>
+    <div class="s-body">
+      <h2>с кем <em>работали</em>.</h2>
+      <p class="muted">Прайвет-десков, фондов и стартапов — за кадром (NDA). Тут — те, чьи имена можно сказать. Полный список в <a href="work.html" style="color:var(--acid)">work archive ↗</a>.</p>
+
+      <div class="clients">
+        <div class="client acid">Parabolic</div>
+        <div class="client">Coldstack</div>
+        <div class="client">Mint.fm</div>
+        <div class="client">Trace Labs</div>
+        <div class="client">Token Studio</div>
+        <div class="client acid">Northpole</div>
+        <div class="client">Hedge.ui</div>
+        <div class="client">+ 5 NDA</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- workspace -->
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">[ 06 ] / workspace</div>
+    <div class="s-body">
+      <h2>как мы <em>работаем</em>.</h2>
+      <p>Полностью remote. Common slot — 11:00–18:00 UTC+3. Бриф → созвон 30 мин → детальный план + смета → старт. Пинг-понг с менеджерами не любим, поэтому его и нет.</p>
+
+      <div class="workspace">
+        <div class="ws-card acid">
+          <div class="label">tools / daily</div>
+          <h4>Figma · Linear · Cursor · Discord · Tg.</h4>
+          <div class="meta-line"><span>stack version</span><b>2026.05</b></div>
+        </div>
+        <div class="ws-card">
+          <div class="label">async / docs</div>
+          <h4>Notion для решений,<br>Loom вместо <em>созвонов</em>.</h4>
+          <div class="meta-line"><span>meeting hours / week</span><b>&lt; 6</b></div>
+        </div>
+        <div class="ws-card">
+          <div class="label">code / ship</div>
+          <h4>GitHub · Vercel<br>Hetzner · Docker.</h4>
+          <div class="meta-line"><span>deploy frequency</span><b>5× / day</b></div>
+        </div>
+        <div class="ws-card warm">
+          <div class="label">music / fuel</div>
+          <h4>lo-fi · drum&amp;bass<br><em>coffee</em>.</h4>
+          <div class="meta-line"><span>cups / week</span><b>~ 60</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- final -->
+<section class="final">
+  <h2>let's <em>talk</em>.</h2>
+  <a href="index.html#start" class="cta">start a project ↗</a>
+  <div class="meta">or write directly · <b>hi@impuls.studio</b> · <b>@impuls_studio</b></div>
+</section>
+
+<footer>
+  <span>© impuls / studio — 2026</span>
+  <span><a href="work.html">work ↗</a></span>
+  <span><a href="index.html">← back to index</a></span>
+</footer>
+
+</body>
+</html>

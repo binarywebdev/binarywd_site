@@ -1,0 +1,146 @@
+---
+import type { Locale } from '~/i18n/utils';
+import { t, localePath } from '~/i18n/utils';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const f = (k: string) => t(lang, 'footer.' + k);
+const offices = t(lang, 'footer.offices');
+---
+
+<footer id="contact">
+  <div class="ft-top">
+    <div class="ft-talk">
+      <h2>{f('talk').replace(f('talkEm'), '')}<em>{f('talkEm')}</em>.</h2>
+      <a href="mailto:hi@impuls.studio" class="mail">hi@impuls.studio</a>
+      <span class="tg">{f('telegram')} · <b>@impuls_studio</b></span>
+      <span class="tg">{f('response')} · <b>&lt; 24h</b></span>
+    </div>
+
+    <div class="ft-col">
+      <h5>{f('studio')}</h5>
+      <a href={localePath(lang, '/work')}>{f('links.work')} <span class="ext">↗</span></a>
+      <a href={localePath(lang, '/') + '#services'}>{f('links.services')}</a>
+      <a href={localePath(lang, '/about')}>{f('links.about')}</a>
+      <a href={localePath(lang, '/') + '#dispatch'}>{f('links.dispatch')}</a>
+    </div>
+
+    <div class="ft-col">
+      <h5>{f('practice')}</h5>
+      <a href="#">{f('links.tradingUi')}</a>
+      <a href="#">{f('links.brand')}</a>
+      <a href="#">{f('links.frontend')}</a>
+      <a href="#">{f('links.botInfra')}</a>
+    </div>
+
+    <div class="ft-col">
+      <h5>{f('contact')}</h5>
+      <a href={localePath(lang, '/') + '#start'}>{f('links.start')}</a>
+      <a href="mailto:hi@impuls.studio">hi@impuls.studio</a>
+      <a href="#">{f('links.press')} <span class="ext">PDF</span></a>
+      <a href="#">{f('links.nda')} <span class="ext">PDF</span></a>
+    </div>
+  </div>
+
+  <div class="ft-mid">
+    <div class="office live">
+      <div class="name"><span class="dot"></span>{offices.moscow.name}</div>
+      <div class="addr"><b>{offices.moscow.tag}</b>{offices.moscow.addr}</div>
+    </div>
+    <div class="office">
+      <div class="name"><span class="dot"></span>{offices.remote.name}</div>
+      <div class="addr" set:html={`<b>${offices.remote.tag}</b>${offices.remote.addr.replace(/\\n/g, '<br>')}`}></div>
+    </div>
+    <div class="office">
+      <div class="name"><span class="dot"></span>{offices.telegram.name}</div>
+      <div class="addr" set:html={`<b>${offices.telegram.tag}</b>${offices.telegram.addr.replace(/\\n/g, '<br>')}`}></div>
+    </div>
+  </div>
+
+  <div class="ft-bot">
+    <div class="socials">
+      <a href="#" title="Twitter / X">x</a>
+      <a href="#" title="Dribbble">dr</a>
+      <a href="#" title="GitHub">gh</a>
+      <a href="#" title="Telegram">tg</a>
+      <a href="#" title="Read.cv">cv</a>
+    </div>
+    <div class="legal-row">
+      <span>{f('copy')}</span>
+      <span class="sep">·</span>
+      <a href="#">{f('legal.privacy')}</a>
+      <a href="#">{f('legal.terms')}</a>
+      <a href="#">{f('legal.sitemap')}</a>
+      <span class="sep">·</span>
+      <span class="v">v 0.1.0 · astro + pb</span>
+    </div>
+  </div>
+
+  <div class="ft-mark" aria-hidden="true">impuls / studio</div>
+</footer>
+
+<style>
+  footer { border-top: 1px solid var(--line); padding: 80px 32px 28px; position: relative; overflow: hidden; }
+  .ft-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; align-items: start; }
+  .ft-talk h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(72px, 11vw, 180px);
+    line-height: .85; letter-spacing: -.035em; font-weight: 400; margin-bottom: 32px;
+  }
+  .ft-talk h2 em { font-style: italic; color: var(--acid); }
+  .ft-talk .mail {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1; letter-spacing: -.015em;
+    border-bottom: 1px solid var(--ink); padding-bottom: 6px;
+    display: inline-block; transition: .2s; margin-bottom: 14px;
+  }
+  .ft-talk .mail:hover { color: var(--acid); border-color: var(--acid); }
+  .ft-talk .tg {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-top: 14px;
+  }
+  .ft-talk .tg b { color: var(--ink); font-weight: 400; }
+
+  .ft-col h5 {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: .18em; color: var(--muted);
+    margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--line);
+  }
+  .ft-col a {
+    display: block; padding: 6px 0; font-family: 'Instrument Serif', serif;
+    font-size: 22px; letter-spacing: -.01em; transition: .2s;
+    border-bottom: 1px solid transparent; width: fit-content; line-height: 1.3;
+  }
+  .ft-col a:hover { color: var(--acid); border-color: var(--acid); }
+  .ft-col a .ext {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--muted); margin-left: 8px; letter-spacing: .1em; vertical-align: middle;
+  }
+
+  .ft-mid { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .office { position: relative; }
+  .office .name { font-family: 'Instrument Serif', serif; font-size: 32px; font-weight: 400; letter-spacing: -.015em; margin-bottom: 14px; line-height: 1; }
+  .office .name .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 10px; vertical-align: middle; transform: translateY(-4px); }
+  .office.live .name .dot { background: var(--acid); box-shadow: 0 0 12px var(--acid); animation: pulse 1.8s infinite; }
+  .office .addr { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .office .addr :global(b) { color: var(--ink); font-weight: 400; display: block; }
+
+  .ft-bot { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+  .socials { display: flex; gap: 8px; }
+  .socials a { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); transition: .2s; letter-spacing: .05em; }
+  .socials a:hover { background: var(--acid); color: #000; border-color: var(--acid); transform: translateY(-2px); }
+  .legal-row { display: flex; gap: 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; align-items: center; flex-wrap: wrap; }
+  .legal-row a:hover { color: var(--ink); }
+  .legal-row .sep { opacity: .3; }
+
+  .ft-mark { position: absolute; left: 32px; right: 32px; bottom: -30px; font-family: 'Instrument Serif', serif; font-size: clamp(140px, 22vw, 360px); font-style: italic; color: transparent; -webkit-text-stroke: 1px rgba(255, 255, 255, 0.04); letter-spacing: -.05em; line-height: .85; pointer-events: none; white-space: nowrap; overflow: hidden; }
+
+  @media (max-width: 900px) {
+    .ft-top { grid-template-columns: 1fr 1fr; }
+    .ft-talk { grid-column: 1/-1; }
+    .ft-mid { grid-template-columns: 1fr; }
+    .ft-bot { flex-direction: column; align-items: flex-start; }
+    .ft-mark { font-size: 120px; }
+  }
+</style>

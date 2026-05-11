@@ -1,0 +1,32 @@
+# /etc/systemd/system/pocketbase.service
+# Запуск PocketBase как daemon под отдельным юзером
+#
+# Перед использованием:
+#   sudo useradd -r -s /usr/sbin/nologin -d /opt/pocketbase pocketbase
+#   sudo mkdir -p /opt/pocketbase
+#   sudo chown pocketbase:pocketbase /opt/pocketbase
+#   # положить бинарник /opt/pocketbase/pocketbase, chmod +x
+
+[Unit]
+Description=PocketBase
+After=network.target
+
+[Service]
+Type=simple
+User=pocketbase
+Group=pocketbase
+WorkingDirectory=/opt/pocketbase
+ExecStart=/opt/pocketbase/pocketbase serve --http=127.0.0.1:8090
+Restart=always
+RestartSec=5
+LimitNOFILE=4096
+
+# защита окружения
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/pocketbase
+
+[Install]
+WantedBy=multi-user.target

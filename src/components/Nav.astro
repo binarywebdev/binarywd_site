@@ -1,0 +1,46 @@
+---
+import type { Locale } from '~/i18n/utils';
+import { t, localePath, otherLocale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  active?: 'work' | 'services' | 'about' | 'contact' | null;
+}
+
+const { lang, active = null } = Astro.props;
+const home = localePath(lang, '/');
+---
+
+<nav>
+  <div class="logo"><a href={home}>impuls<i>/studio</i></a></div>
+  <ul>
+    <li class:list={[{ on: active === 'work' }]}><a href={localePath(lang, '/work')}>{t(lang, 'nav.work')}</a></li>
+    <li class:list={[{ on: active === 'services' }]}><a href={home + '#services'}>{t(lang, 'nav.services')}</a></li>
+    <li class:list={[{ on: active === 'about' }]}><a href={localePath(lang, '/about')}>{t(lang, 'nav.about')}</a></li>
+    <li class:list={[{ on: active === 'contact' }]}><a href={home + '#start'}>{t(lang, 'nav.contact')}</a></li>
+    <li class="lang"><a href={localePath(otherLocale(lang), Astro.url.pathname.replace(/^\/en/, '') || '/')}>{otherLocale(lang)}</a></li>
+  </ul>
+</nav>
+
+<style>
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 32px; mix-blend-mode: difference;
+  }
+  .logo { font-family: 'Instrument Serif', serif; font-size: 26px; letter-spacing: -.02em; }
+  .logo i { font-style: italic; color: var(--acid); }
+  ul {
+    display: flex; gap: 28px; list-style: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+  }
+  li::before { content: "→ "; opacity: .4; }
+  li.on::before { color: var(--acid); opacity: 1; }
+  li.lang::before { content: "· "; opacity: .4; }
+  li.lang a { color: var(--muted); }
+  li.lang a:hover { color: var(--ink); }
+  @media (max-width: 700px) {
+    ul { display: none; }
+  }
+</style>

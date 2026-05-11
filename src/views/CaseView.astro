@@ -1,0 +1,110 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import { t, localePath } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+import type { CaseRow } from '~/lib/fixtures';
+
+interface Props { lang: Locale; case: CaseRow; }
+const { lang, case: c } = Astro.props;
+---
+
+<Layout title={`${c.title} · Case · impuls/studio`} lang={lang} active="work" withStickyCta={false}>
+  <div class="progress" id="progress"></div>
+
+  <section class="hero">
+    <div class="crumbs">
+      <a href={localePath(lang, '/')}>index</a><span>/</span><a href={localePath(lang, '/work')}>work</a><span>/</span>
+      <span style="color:var(--ink)">{c.slug}</span>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <h1>{c.title.split(' ').slice(0, -1).join(' ')} <em>{c.title.split(' ').slice(-1)[0]}</em></h1>
+        <p class="lede">{c.sub}.</p>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><span>client</span><b>—</b></div>
+        <div class="fact"><span>year</span><b>{c.year.replace("'", "20")}</b></div>
+        <div class="fact"><span>category</span><b>{c.category}</b></div>
+        <div class="fact"><span>status</span><b class={c.status === 'live' ? 'live' : ''}>{c.status}</b></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bigvis">
+    <div class="label"><b>{c.title}</b> · case visual</div>
+  </div>
+
+  <section class="s">
+    <div class="s-grid">
+      <div class="s-tag">[ 01 ] / context</div>
+      <div class="s-body">
+        <h2>case body — <em>port от reference</em></h2>
+        <p>Это базовый шаблон кейса. Полный контент (problem ↔ solution, process steps, stats, gallery, quote, stack) подтянем из PocketBase, как только настроим коллекцию <code>cases</code> с полями <code>body_blocks</code>.</p>
+        <p>Сейчас рендерится из <code>src/lib/fixtures.ts</code> — там <code>CaseRow</code> содержит только мета-поля. После миграции на PB этот же view будет получать <code>case.body</code> массивом блоков и разворачивать их.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <h2>build something<br>that <em>compounds</em>.</h2>
+    <a href={localePath(lang, '/') + '#start'} class="cta">{t(lang, 'common.startProject')} ↗</a>
+  </section>
+</Layout>
+
+<script>
+  const p = document.getElementById('progress');
+  if (p) {
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      p.style.width = pct + '%';
+    }, { passive: true });
+  }
+</script>
+
+<style>
+  .progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--acid); z-index: 60; width: 0; transition: width .1s; }
+
+  .hero { padding: 140px 32px 60px; border-bottom: 1px solid var(--line); }
+  .crumbs { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; margin-bottom: 60px; }
+  .crumbs a:hover { color: var(--acid); }
+  .crumbs span { margin: 0 10px; opacity: .4; }
+
+  .hero-grid { display: grid; grid-template-columns: 1fr 380px; gap: 60px; align-items: end; }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(56px, 9vw, 140px); line-height: .88; letter-spacing: -.03em; margin-bottom: 32px; }
+  .hero h1 em { font-style: italic; color: var(--acid); }
+  .hero .lede { font-size: 20px; line-height: 1.45; max-width: 680px; color: var(--muted); }
+
+  .facts { display: flex; flex-direction: column; gap: 18px; }
+  .fact { display: flex; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .fact b { color: var(--ink); font-weight: 400; text-align: right; }
+  .fact .live::before { content: "● "; color: var(--acid); animation: pulse 1.5s infinite; }
+
+  .bigvis { margin: 60px 32px 0; height: 60vh; min-height: 480px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(135deg, #1a1a1a, #0a0a0a); position: relative; overflow: hidden; }
+  .bigvis::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(214, 255, 61, .18), transparent 55%), radial-gradient(circle at 20% 80%, rgba(255, 90, 31, .12), transparent 50%); pointer-events: none; }
+  .bigvis .label { position: absolute; top: 24px; left: 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); z-index: 2; }
+  .bigvis .label b { color: var(--ink); font-weight: 400; }
+
+  section.s { padding: 120px 32px; border-top: 1px solid var(--line); }
+  .s-grid { display: grid; grid-template-columns: 280px 1fr; gap: 60px; }
+  .s-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); position: sticky; top: 120px; align-self: start; }
+  .s-tag::before { content: "§ "; color: var(--acid); }
+  .s-body h2 { font-family: 'Instrument Serif', serif; font-size: clamp(40px, 5vw, 72px); font-weight: 400; letter-spacing: -.02em; line-height: 1; margin-bottom: 32px; }
+  .s-body h2 em { color: var(--acid); font-style: italic; }
+  .s-body p { font-size: 18px; line-height: 1.55; color: var(--ink); max-width: 720px; margin-bottom: 20px; }
+  .s-body code { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--acid); background: rgba(214,255,61,.06); padding: 2px 6px; border-radius: 4px; }
+
+  .final { padding: 140px 32px; text-align: center; border-top: 1px solid var(--line); }
+  .final h2 { font-family: 'Instrument Serif', serif; font-size: clamp(56px, 8vw, 120px); font-weight: 400; letter-spacing: -.03em; line-height: .9; margin-bottom: 32px; }
+  .final h2 em { color: var(--acid); font-style: italic; }
+  .final .cta { display: inline-flex; align-items: center; gap: 14px; padding: 22px 38px; background: var(--acid); color: #000; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-transform: uppercase; letter-spacing: .18em; font-weight: 600; transition: .2s; }
+  .final .cta:hover { background: var(--ink); transform: translateY(-2px); }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .s-grid { grid-template-columns: 1fr; }
+    .s-tag { position: static; }
+  }
+</style>

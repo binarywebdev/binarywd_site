@@ -1,0 +1,56 @@
+name: Build and deploy binarywd.com
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Astro)
+        run: npm run build
+        env:
+          # При билде Astro может тянуть данные из PB.
+          # Положи PB_URL в репо-secret если SSR требует.
+          PB_URL: ${{ secrets.PB_URL }}
+
+      - name: Copy dist to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "dist/*"
+          target: "/tmp/binarywd-deploy"
+          strip_components: 1
+          rm: true
+
+      - name: Move into place
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            mkdir -p ${{ secrets.DEPLOY_PATH }}
+            rm -rf ${{ secrets.DEPLOY_PATH }}/*
+            cp -r /tmp/binarywd-deploy/* ${{ secrets.DEPLOY_PATH }}/
+            sudo chown -R hedgebot:www-data ${{ secrets.DEPLOY_PATH }} || true
+            rm -rf /tmp/binarywd-deploy

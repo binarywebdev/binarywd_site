@@ -1,0 +1,134 @@
+{
+  "nav": {
+    "work": "work",
+    "services": "services",
+    "manifest": "manifest",
+    "about": "about",
+    "contact": "contact"
+  },
+  "common": {
+    "startProject": "start a project",
+    "readMore": "read",
+    "viewCase": "view case",
+    "min": "min",
+    "live": "live",
+    "case": "case",
+    "archive": "archive",
+    "nda": "NDA"
+  },
+  "hero": {
+    "meta1": "01 / index",
+    "estLabel": "est.",
+    "estValue": "2024",
+    "kind": "crypto-native design + dev",
+    "slots": "currently 04 / 12 slots open",
+    "response": "response < 24h",
+    "geo": "lat 55.7558°N · lon 37.6173°E",
+    "titleA": "we ship",
+    "titleEm1": "interfaces",
+    "titleB": "that",
+    "titleStrike": "don't lie",
+    "titleEm2": "convert",
+    "titleC": "in a",
+    "titleEm3": "volatile",
+    "titleD": "market.",
+    "lede": "Студия из трейдеров и дизайнеров.",
+    "ledeRest": "Делаем продукты для тех, кто двигает рынок: терминалы, дашборды, бот-инфраструктуру, лендинги, которые не стыдно показать инвестору в 3 ночи."
+  },
+  "services": {
+    "tag": "[ 02 ] / what we do",
+    "items": [
+      { "title": "Product design", "tags": "terminals · dashboards · flows" },
+      { "title": "Brand & identity", "tags": "naming · guidelines · tokens" },
+      { "title": "Frontend dev", "tags": "react · next · three.js · realtime ws" },
+      { "title": "Bot infrastructure", "tags": "binance · bybit · fastapi · backtesting" },
+      { "title": "Marketing sites", "tags": "webflow · framer · custom" }
+    ]
+  },
+  "work": {
+    "headTitle": "selected work.",
+    "headEm": "work",
+    "headMeta": "2024 — 2026 / 12 cases",
+    "endTitle": "got something similar?",
+    "endText": "Берём 4 проекта в квартал. Если идея резонирует — кидай бриф, ответим за 24 часа без агентского пинг-понга."
+  },
+  "manifest": {
+    "lineA": "We don't design",
+    "lineAEm": "crypto sites",
+    "lineB": "We design tools that",
+    "lineBU": "survive",
+    "lineC": "a 40% drawdown",
+    "lineD": "and still feel",
+    "lineDEm": "good",
+    "lineE": "to open at",
+    "lineEEm": "3 a.m.",
+    "rules": [
+      "Trader-first, not investor-first.",
+      "Speed > polish, then polish.",
+      "No stock 3D blobs. Ever.",
+      "Numbers are typography.",
+      "If it doesn't load in 2s, it's broken.",
+      "Dark mode is the only mode.",
+      "We answer in DMs, not in tickets."
+    ]
+  },
+  "dispatch": {
+    "head": "dispatch / log",
+    "filters": ["all", "product", "release", "research", "studio"]
+  },
+  "contact": {
+    "title": "start a project.",
+    "lede": "Расскажи коротко, что строишь. Мы вернёмся с вопросами и грубой сметой в течение 24 часов — без бойлерплейта и презентаций «о нас».",
+    "response": "response",
+    "responseValue": "< 24h",
+    "slots": "slots Q3 / 2026",
+    "slotsValue": "04 / 12 open",
+    "budget": "typical budget",
+    "budgetValue": "$8k — $80k",
+    "status": "status",
+    "statusValue": "accepting briefs",
+    "form": {
+      "name": "name",
+      "namePh": "Satoshi N.",
+      "contact": "email / telegram",
+      "contactPh": "hi@you.xyz / @handle",
+      "company": "company / project",
+      "companyPh": "acme.xyz",
+      "services": "what we'll work on",
+      "budget": "budget range",
+      "story": "tell us the story",
+      "storyPh": "что строите, какие сроки, что уже есть, чего боитесь...",
+      "legal": "отправляя форму, ты соглашаешься на NDA по запросу. брифы не передаём третьим сторонам.",
+      "send": "send brief"
+    }
+  },
+  "footer": {
+    "talk": "let's talk.",
+    "talkEm": "talk",
+    "telegram": "telegram",
+    "response": "response",
+    "studio": "studio",
+    "practice": "practice",
+    "contact": "contact",
+    "links": {
+      "work": "Work",
+      "services": "Services",
+      "about": "About",
+      "dispatch": "Dispatch",
+      "tradingUi": "Trading UI",
+      "brand": "Brand & Identity",
+      "frontend": "Frontend Dev",
+      "botInfra": "Bot Infrastructure",
+      "start": "Start a project",
+      "press": "Press kit",
+      "nda": "NDA template"
+    },
+    "offices": {
+      "moscow": { "name": "Moscow", "tag": "HQ · UTC+3", "addr": "Tverskaya 18, Moscow, 125009" },
+      "remote": { "name": "Remote", "tag": "worldwide · async", "addr": "EU · Asia · Americas\\ncommon slot · 11–18 UTC+3" },
+      "telegram": { "name": "Telegram", "tag": "direct line", "addr": "@impuls_studio\\nopen 09–22 UTC+3" }
+    },
+    "copy": "© 2024 — 2026 impuls / studio",
+    "legal": { "privacy": "Privacy", "terms": "Terms", "sitemap": "Sitemap" }
+  }
+}

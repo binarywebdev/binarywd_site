@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IMPULS / Studio — Crypto-native design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --ink:#f4f1ea;
+    --muted:#7a7770;
+    --acid:#d6ff3d;
+    --line:#1c1c1c;
+    --warm:#ff5a1f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--acid);color:#000}
+
+  /* cursor glow */
+  .glow{position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:radial-gradient(600px circle at var(--mx,50%) var(--my,30%), rgba(214,255,61,.08), transparent 40%);
+    transition:background .2s}
+
+  /* grain */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.04;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/></svg>")}
+
+  /* nav */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:22px 32px;mix-blend-mode:difference}
+  .logo{font-family:'Instrument Serif',serif;font-size:26px;letter-spacing:-.02em}
+  .logo i{font-style:italic;color:var(--acid)}
+  nav ul{display:flex;gap:28px;list-style:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  nav ul li::before{content:"→ ";opacity:.4}
+
+  /* ticker */
+  .ticker{position:fixed;top:64px;left:0;right:0;z-index:40;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(10,10,10,.7);backdrop-filter:blur(8px);overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .ticker-track{display:inline-flex;white-space:nowrap;padding:10px 0;animation:scroll 60s linear infinite}
+  .ticker span{margin-right:48px;color:var(--muted)}
+  .ticker span b{color:var(--ink);font-weight:600;margin-left:8px}
+  .ticker span .up{color:var(--acid)}
+  .ticker span .dn{color:var(--warm)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* hero */
+  .hero{min-height:100vh;padding:160px 32px 80px;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .hero-bg canvas{display:block;width:100%;height:100%}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.4) 0%,rgba(10,10,10,0) 30%,rgba(10,10,10,0) 70%,rgba(10,10,10,.8) 100%);pointer-events:none}
+  .hero > *:not(.hero-bg){position:relative;z-index:1}
+  .hero-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;display:flex;flex-direction:column;gap:8px}
+  .hero-meta b{color:var(--ink);font-weight:400}
+  h1.title{grid-column:1/-1;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(64px,12vw,200px);line-height:.88;letter-spacing:-.03em;margin-top:40px}
+  h1.title em{font-style:italic;color:var(--acid)}
+  h1.title .strike{position:relative;display:inline-block}
+  h1.title .strike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:6px;background:var(--warm);transform:rotate(-2deg)}
+  .hero-foot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;border-top:1px solid var(--line);padding-top:24px}
+  .lede{max-width:520px;font-size:18px;line-height:1.5;color:var(--ink)}
+  .lede span{color:var(--muted)}
+  .cta{display:inline-flex;align-items:center;gap:12px;padding:18px 28px;border:1px solid var(--ink);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.15em;transition:.2s;cursor:pointer;background:transparent;color:var(--ink)}
+  .cta:hover{background:var(--acid);color:#000;border-color:var(--acid)}
+  .cta .dot{width:8px;height:8px;border-radius:50%;background:var(--acid);box-shadow:0 0 12px var(--acid);animation:pulse 1.8s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+
+  /* marquee */
+  .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:24px 0;font-family:'Instrument Serif',serif;font-size:clamp(40px,7vw,110px);letter-spacing:-.02em;white-space:nowrap}
+  .marquee-track{display:inline-flex;animation:scroll 30s linear infinite}
+  .marquee span{margin-right:48px;font-style:italic;opacity:.9}
+  .marquee span:nth-child(odd){font-style:normal;-webkit-text-stroke:1px var(--ink);color:transparent}
+
+  /* services */
+  .services{padding:120px 32px;display:grid;grid-template-columns:280px 1fr;gap:40px}
+  .section-tag{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);position:sticky;top:120px;align-self:start}
+  .section-tag::before{content:"§ ";color:var(--acid)}
+  .svc-list{display:flex;flex-direction:column}
+  .svc{border-top:1px solid var(--line);padding:40px 0;display:grid;grid-template-columns:60px 1fr auto;gap:24px;align-items:center;cursor:pointer;transition:.3s}
+  .svc:last-child{border-bottom:1px solid var(--line)}
+  .svc .num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+  .svc h3{font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,72px);font-weight:400;line-height:1;letter-spacing:-.02em;transition:.3s}
+  .svc .tags{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-align:right;line-height:1.8}
+  .svc:hover{padding-left:24px}
+  .svc:hover h3{color:var(--acid);font-style:italic}
+
+  /* work grid — asymmetric */
+  .work{padding:80px 32px 120px}
+  .work-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:60px;border-bottom:1px solid var(--line);padding-bottom:24px}
+  .work-head h2{font-family:'Instrument Serif',serif;font-size:clamp(48px,7vw,96px);font-weight:400;letter-spacing:-.02em}
+  .work-head h2 em{color:var(--acid);font-style:italic}
+  .work-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;grid-auto-rows:140px}
+  .card{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:24px;transition:.4s;cursor:pointer}
+  .card:hover{border-color:var(--ink);transform:translateY(-4px)}
+  .card .meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;display:flex;justify-content:space-between}
+  .card h4{font-family:'Instrument Serif',serif;font-size:32px;font-weight:400;line-height:1;letter-spacing:-.02em}
+  .card .arrow{position:absolute;top:24px;right:24px;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:14px;transition:.3s}
+  .card:hover .arrow{background:var(--acid);color:#000;border-color:var(--acid);transform:rotate(-45deg)}
+
+  .c1{grid-column:1/8;grid-row:span 3;background:linear-gradient(135deg,#1a1a1a,#0a0a0a)}
+  .c1::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 40%,rgba(214,255,61,.15),transparent 60%);pointer-events:none}
+  .c2{grid-column:8/13;grid-row:span 2;background:#d6ff3d;color:#000}
+  .c2 .meta,.c2 .arrow{color:#000;border-color:rgba(0,0,0,.2)}
+  .c3{grid-column:8/13;grid-row:span 1;background:#1a1a1a}
+  .c4{grid-column:1/5;grid-row:span 2;background:#1a1a1a;background-image:linear-gradient(rgba(255,90,31,.08),transparent)}
+  .c5{grid-column:5/9;grid-row:span 2;background:#1a1a1a}
+  .c6{grid-column:9/13;grid-row:span 2;background:#ff5a1f;color:#000}
+  .c6 .meta,.c6 .arrow{color:#000;border-color:rgba(0,0,0,.2)}
+
+  /* chart sketch in c5 */
+  .chart{position:absolute;left:0;right:0;bottom:0;height:60%;opacity:.7}
+  .chart svg{width:100%;height:100%}
+
+  /* manifesto */
+  .manifest{padding:140px 32px;display:grid;grid-template-columns:1fr 1fr;gap:60px;border-top:1px solid var(--line)}
+  .manifest p{font-family:'Instrument Serif',serif;font-size:clamp(28px,3.4vw,48px);line-height:1.15;letter-spacing:-.01em;font-weight:400}
+  .manifest p em{color:var(--acid);font-style:italic}
+  .manifest p .u{border-bottom:2px solid var(--warm);padding-bottom:2px}
+  .manifest .col-r{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);line-height:1.8;align-self:end}
+  .manifest .col-r b{color:var(--ink);font-weight:400}
+
+  /* contact form */
+  .contact-form{padding:120px 32px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start;position:relative}
+  .cf-left h2{font-family:'Instrument Serif',serif;font-size:clamp(56px,8vw,120px);font-weight:400;line-height:.9;letter-spacing:-.03em;margin-bottom:32px}
+  .cf-left h2 em{color:var(--acid);font-style:italic}
+  .cf-left .lede{font-size:17px;line-height:1.5;color:var(--muted);max-width:380px;margin-bottom:40px}
+  .cf-meta{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);display:flex;flex-direction:column;gap:14px}
+  .cf-meta div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;max-width:360px}
+  .cf-meta b{color:var(--ink);font-weight:400}
+  .cf-meta .live::before{content:"● ";color:var(--acid);animation:pulse 1.5s infinite}
+
+  .cf-right{display:flex;flex-direction:column;gap:28px}
+  .cf-row{display:flex;flex-direction:column;gap:8px;position:relative}
+  .cf-row label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted)}
+  .cf-row label .req{color:var(--warm);margin-left:4px}
+  .cf-row input,.cf-row textarea{background:transparent;border:0;border-bottom:1px solid var(--line);outline:0;padding:14px 0;color:var(--ink);font-family:'Inter',sans-serif;font-size:18px;font-weight:300;transition:border-color .2s}
+  .cf-row textarea{resize:vertical;min-height:120px;font-family:'Inter',sans-serif}
+  .cf-row input::placeholder,.cf-row textarea::placeholder{color:#3a3a3a}
+  .cf-row input:focus,.cf-row textarea:focus{border-color:var(--acid)}
+  .cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+
+  .cf-budget{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .cf-budget label{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px 16px;border:1px solid var(--line);border-radius:999px;color:var(--muted);transition:.2s;letter-spacing:.05em;text-transform:none}
+  .cf-budget input{display:none}
+  .cf-budget input:checked + label{background:var(--acid);color:#000;border-color:var(--acid)}
+  .cf-budget label:hover{border-color:var(--ink);color:var(--ink)}
+
+  .cf-services{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .cf-services label{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 14px;border:1px solid var(--line);border-radius:6px;color:var(--muted);transition:.2s;text-transform:uppercase;letter-spacing:.1em}
+  .cf-services input{display:none}
+  .cf-services input:checked + label{background:var(--ink);color:#000;border-color:var(--ink)}
+
+  .cf-submit{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:20px;flex-wrap:wrap}
+  .cf-submit .legal{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;max-width:280px;line-height:1.5}
+  .cf-send{background:var(--acid);color:#000;border:0;padding:22px 36px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.18em;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:14px;transition:.2s}
+  .cf-send:hover{background:var(--ink);transform:translateY(-2px);box-shadow:0 10px 30px rgba(244,241,234,.15)}
+  .cf-send .arr{transition:transform .25s}
+  .cf-send:hover .arr{transform:translateX(6px) rotate(-45deg)}
+
+  @media (max-width:900px){
+    .contact-form{grid-template-columns:1fr;gap:48px;padding:80px 24px}
+    .cf-grid{grid-template-columns:1fr}
+  }
+
+  /* sticky cta */
+  .sticky-cta{position:fixed;right:24px;bottom:24px;z-index:60;display:inline-flex;align-items:center;gap:12px;padding:18px 26px;border-radius:999px;background:var(--acid);color:#000;font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.15em;font-weight:600;cursor:pointer;border:0;box-shadow:0 8px 28px rgba(214,255,61,.25),0 0 0 1px rgba(0,0,0,.05);opacity:0;transform:translateY(20px);transition:opacity .35s,transform .35s,box-shadow .25s,background .2s}
+  .sticky-cta.show{opacity:1;transform:translateY(0)}
+  .sticky-cta:hover{background:#fff;box-shadow:0 12px 36px rgba(255,255,255,.18)}
+  .sticky-cta .dot{width:8px;height:8px;border-radius:50%;background:#000;animation:pulse 1.8s infinite}
+  .sticky-cta .arr{display:inline-block;transition:transform .25s}
+  .sticky-cta:hover .arr{transform:translateX(4px) rotate(-45deg)}
+
+  /* news / dispatch */
+  .news{padding:120px 32px;border-top:1px solid var(--line)}
+  .news-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:60px;gap:40px;flex-wrap:wrap}
+  .news-head h2{font-family:'Instrument Serif',serif;font-size:clamp(48px,7vw,96px);font-weight:400;letter-spacing:-.02em;line-height:.95}
+  .news-head h2 em{color:var(--acid);font-style:italic}
+  .news-head .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:8px 14px;border:1px solid var(--line);border-radius:999px;color:var(--muted);cursor:pointer;transition:.2s}
+  .chip:hover,.chip.on{border-color:var(--ink);color:var(--ink)}
+  .chip.on{background:var(--acid);color:#000;border-color:var(--acid)}
+
+  .news-list{display:flex;flex-direction:column}
+  .post{display:grid;grid-template-columns:140px 1fr 240px;gap:40px;padding:36px 0;border-top:1px solid var(--line);align-items:start;cursor:pointer;transition:.3s;position:relative}
+  .post:last-child{border-bottom:1px solid var(--line)}
+  .post::before{content:"";position:absolute;left:-32px;top:50%;width:0;height:1px;background:var(--acid);transition:.3s}
+  .post:hover{padding-left:24px}
+  .post:hover::before{width:24px}
+  .post .date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:.05em;line-height:1.6}
+  .post .date b{display:block;color:var(--ink);font-size:32px;font-weight:400;font-family:'Instrument Serif',serif;letter-spacing:-.02em;margin-bottom:4px}
+  .post .body h3{font-family:'Instrument Serif',serif;font-size:clamp(26px,3vw,40px);font-weight:400;line-height:1.1;letter-spacing:-.015em;margin-bottom:14px;transition:.3s}
+  .post:hover .body h3{color:var(--acid);font-style:italic}
+  .post .body p{font-size:15px;line-height:1.55;color:var(--muted);max-width:560px}
+  .post .tag-col{display:flex;flex-direction:column;align-items:flex-end;gap:10px;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em}
+  .post .tag{padding:5px 10px;border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+  .post .tag.pin{background:var(--acid);color:#000;border-color:var(--acid);font-weight:600}
+  .post .tag.live{color:var(--acid);border-color:rgba(214,255,61,.3)}
+  .post .tag.live::before{content:"● ";animation:pulse 1.5s infinite}
+  .post .read{color:var(--muted)}
+  .post:hover .read{color:var(--ink)}
+
+  .news-foot{display:flex;justify-content:space-between;align-items:center;margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+  .news-foot .sub{display:flex;gap:0;border:1px solid var(--line);border-radius:999px;overflow:hidden;max-width:420px;width:100%}
+  .news-foot .sub input{flex:1;background:transparent;border:0;outline:0;padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);letter-spacing:.05em}
+  .news-foot .sub input::placeholder{color:var(--muted);text-transform:uppercase}
+  .news-foot .sub button{background:var(--ink);color:#000;border:0;padding:0 22px;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;cursor:pointer;transition:.2s}
+  .news-foot .sub button:hover{background:var(--acid)}
+  .news-foot .all{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .news-foot .all:hover{color:var(--acid)}
+
+  @media (max-width:900px){
+    .post{grid-template-columns:1fr;gap:14px}
+    .post .tag-col{flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+    .news-foot{flex-direction:column;gap:20px;align-items:stretch}
+  }
+
+  /* footer — Clay-inspired layout */
+  footer{border-top:1px solid var(--line);padding:80px 32px 28px;position:relative;overflow:hidden}
+  .ft-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;align-items:start}
+  .ft-talk h2{font-family:'Instrument Serif',serif;font-size:clamp(72px,11vw,180px);line-height:.85;letter-spacing:-.035em;font-weight:400;margin-bottom:32px}
+  .ft-talk h2 em{font-style:italic;color:var(--acid)}
+  .ft-talk a.mail{font-family:'Instrument Serif',serif;font-size:clamp(28px,3vw,42px);line-height:1;letter-spacing:-.015em;border-bottom:1px solid var(--ink);padding-bottom:6px;display:inline-block;transition:.2s;margin-bottom:14px}
+  .ft-talk a.mail:hover{color:var(--acid);border-color:var(--acid)}
+  .ft-talk .tg{display:block;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:14px}
+  .ft-talk .tg b{color:var(--ink);font-weight:400}
+  .ft-col h5{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .ft-col a{display:block;padding:6px 0;font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:-.01em;transition:.2s;border-bottom:1px solid transparent;width:fit-content;line-height:1.3}
+  .ft-col a:hover{color:var(--acid);border-color:var(--acid)}
+  .ft-col a .ext{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:8px;letter-spacing:.1em;vertical-align:middle}
+
+  .ft-mid{margin-top:80px;padding-top:32px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+  .office{position:relative}
+  .office .name{font-family:'Instrument Serif',serif;font-size:32px;font-weight:400;letter-spacing:-.015em;margin-bottom:14px;line-height:1}
+  .office .name .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:10px;vertical-align:middle;transform:translateY(-4px)}
+  .office.live .name .dot{background:var(--acid);box-shadow:0 0 12px var(--acid);animation:pulse 1.8s infinite}
+  .office .addr{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .office .addr b{color:var(--ink);font-weight:400;display:block}
+
+  .ft-bot{margin-top:72px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+  .socials{display:flex;gap:8px}
+  .socials a{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:lowercase;color:var(--muted);transition:.2s;letter-spacing:.05em}
+  .socials a:hover{background:var(--acid);color:#000;border-color:var(--acid);transform:translateY(-2px)}
+  .legal-row{display:flex;gap:24px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;align-items:center;flex-wrap:wrap}
+  .legal-row a:hover{color:var(--ink)}
+  .legal-row .sep{opacity:.3}
+  .legal-row .v{color:var(--muted)}
+
+  /* big watermark behind footer */
+  .ft-mark{position:absolute;left:32px;right:32px;bottom:-30px;font-family:'Instrument Serif',serif;font-size:clamp(140px,22vw,360px);font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.04);letter-spacing:-.05em;line-height:.85;pointer-events:none;white-space:nowrap;overflow:hidden}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;padding-top:140px}
+    .services{grid-template-columns:1fr}
+    .section-tag{position:static}
+    .svc{grid-template-columns:40px 1fr;gap:16px}
+    .svc .tags{display:none}
+    .work-grid{grid-template-columns:repeat(6,1fr)}
+    .c1,.c2,.c3,.c4,.c5,.c6{grid-column:1/-1;grid-row:span 2}
+    .manifest{grid-template-columns:1fr}
+    .ft-top{grid-template-columns:1fr 1fr}
+    .ft-talk{grid-column:1/-1}
+    .ft-mid{grid-template-columns:1fr}
+    .ft-bot{flex-direction:column;align-items:flex-start}
+    .ft-mark{font-size:120px}
+    nav ul{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<nav>
+  <div class="logo">impuls<i>/studio</i></div>
+  <ul>
+    <li><a href="#work">work</a></li>
+    <li><a href="#services">services</a></li>
+    <li><a href="#about">manifest</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span>BTC <b>$67,420</b> <b class="up">+2.41%</b></span>
+    <span>ETH <b>$3,812</b> <b class="up">+1.08%</b></span>
+    <span>SOL <b>$184.20</b> <b class="dn">-0.74%</b></span>
+    <span>STUDIO STATUS <b class="up">● ACCEPTING Q3 / 2026</b></span>
+    <span>LOCATION <b>REMOTE · UTC+3</b></span>
+    <span>BTC <b>$67,420</b> <b class="up">+2.41%</b></span>
+    <span>ETH <b>$3,812</b> <b class="up">+1.08%</b></span>
+    <span>SOL <b>$184.20</b> <b class="dn">-0.74%</b></span>
+    <span>STUDIO STATUS <b class="up">● ACCEPTING Q3 / 2026</b></span>
+    <span>LOCATION <b>REMOTE · UTC+3</b></span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-bg"><canvas id="heroCanvas"></canvas></div>
+  <div class="hero-meta">
+    <span>[ 01 ] / index</span>
+    <span>est. <b>2024</b></span>
+    <span>crypto-native <b>design + dev</b></span>
+  </div>
+  <div class="hero-meta" style="text-align:right">
+    <span>currently <b>04 / 12</b> slots open</span>
+    <span>response &lt; <b>24h</b></span>
+    <span>lat <b>55.7558°N</b> · lon <b>37.6173°E</b></span>
+  </div>
+
+  <h1 class="title">
+    we ship <em>interfaces</em><br>
+    that <span class="strike">don't lie</span> <em>convert</em><br>
+    in a <em>volatile</em> market.
+  </h1>
+
+  <div class="hero-foot">
+    <p class="lede">Студия из трейдеров и дизайнеров. <span>Делаем продукты для тех, кто двигает рынок: терминалы, дашборды, бот-инфраструктуру, лендинги, которые не стыдно показать инвестору в 3 ночи.</span></p>
+    <button class="cta"><span class="dot"></span> start a project</button>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Trading UI</span><span>· Token Launchpads</span><span>· Bot Dashboards</span><span>· Wallet UX</span><span>· DeFi Frontends</span><span>· Market Sites</span>
+    <span>Trading UI</span><span>· Token Launchpads</span><span>· Bot Dashboards</span><span>· Wallet UX</span><span>· DeFi Frontends</span><span>· Market Sites</span>
+  </div>
+</div>
+
+<section class="services" id="services">
+  <div class="section-tag">[ 02 ] / what we do</div>
+  <div class="svc-list">
+    <div class="svc">
+      <span class="num">01</span>
+      <h3>Product design</h3>
+      <div class="tags">terminals<br>dashboards<br>flows</div>
+    </div>
+    <div class="svc">
+      <span class="num">02</span>
+      <h3>Brand & identity</h3>
+      <div class="tags">naming<br>guidelines<br>tokens</div>
+    </div>
+    <div class="svc">
+      <span class="num">03</span>
+      <h3>Frontend dev</h3>
+      <div class="tags">react · next<br>three.js<br>realtime ws</div>
+    </div>
+    <div class="svc">
+      <span class="num">04</span>
+      <h3>Bot infrastructure</h3>
+      <div class="tags">binance · bybit<br>fastapi<br>backtesting</div>
+    </div>
+    <div class="svc">
+      <span class="num">05</span>
+      <h3>Marketing sites</h3>
+      <div class="tags">webflow<br>framer<br>custom</div>
+    </div>
+  </div>
+</section>
+
+<section class="work" id="work">
+  <div class="work-head">
+    <h2>selected <em>work</em></h2>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em">2024 — 2026 / 12 cases</span>
+  </div>
+  <div class="work-grid">
+
+    <div class="card c1">
+      <div class="meta"><span>01 / impuls-bot</span><span>trading platform</span></div>
+      <div class="arrow">↗</div>
+      <h4>Auto-trading platform with backtest engine — from idea to first $1M turnover in 4 months.</h4>
+    </div>
+
+    <div class="card c2">
+      <div class="meta"><span>02 / parabolic</span><span>brand</span></div>
+      <div class="arrow">↗</div>
+      <h4>Identity for a quant fund. Numbers as poetry.</h4>
+    </div>
+
+    <div class="card c3">
+      <div class="meta"><span>03 / coldstack</span><span>landing</span></div>
+      <div class="arrow">↗</div>
+      <h4 style="font-size:22px">Web3 storage protocol launch site</h4>
+    </div>
+
+    <div class="card c4">
+      <div class="meta"><span>04 / orderflow</span><span>dashboard</span></div>
+      <div class="arrow">↗</div>
+      <h4>Realtime tape reader for a prop desk.</h4>
+    </div>
+
+    <div class="card c5">
+      <div class="meta"><span>05 / hedge.ui</span><span>terminal</span></div>
+      <div class="arrow">↗</div>
+      <h4>Hedging terminal — 200 instruments, one screen.</h4>
+      <div class="chart">
+        <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#d6ff3d" stroke-width="1.5" points="0,70 30,60 60,68 90,40 120,50 150,30 180,42 210,20 240,28 270,12 300,22 330,8 360,18 400,5"/>
+          <polyline fill="none" stroke="#ff5a1f" stroke-width="1" opacity=".5" points="0,80 50,75 100,72 150,68 200,60 250,55 300,48 350,42 400,38"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card c6">
+      <div class="meta"><span>06 / mint.fm</span><span>NFT marketplace</span></div>
+      <div class="arrow">↗</div>
+      <h4>Curated drop platform with zero fees.</h4>
+    </div>
+
+  </div>
+</section>
+
+<section class="manifest" id="about">
+  <p>We don't design <em>crypto sites</em>.<br>We design tools that <span class="u">survive</span> a 40% drawdown<br>and still feel <em>good</em> to open at <em>3 a.m.</em></p>
+  <div class="col-r">
+    <b>// manifest.txt</b><br><br>
+    01 — Trader-first, not investor-first.<br>
+    02 — Speed &gt; polish, then polish.<br>
+    03 — No stock 3D blobs. Ever.<br>
+    04 — Numbers are typography.<br>
+    05 — If it doesn't load in 2s, it's broken.<br>
+    06 — Dark mode is the only mode.<br>
+    07 — We answer in DMs, not in tickets.
+  </div>
+</section>
+
+<section class="news" id="dispatch">
+  <div class="news-head">
+    <h2>dispatch <em>/ log</em></h2>
+    <div class="filters">
+      <span class="chip on">all</span>
+      <span class="chip">product</span>
+      <span class="chip">release</span>
+      <span class="chip">research</span>
+      <span class="chip">studio</span>
+    </div>
+  </div>
+
+  <div class="news-list">
+
+    <div class="post">
+      <div class="date"><b>11 / 05</b>2026 · 14:32 UTC</div>
+      <div class="body">
+        <h3>Impuls-bot v2.6 — confirmation signals & second-impulse entry</h3>
+        <p>Релиз бэктеста с подтверждением сигнала: алёрт + повторный импульс в окне с правилом направления и min-rank. Меньше ложных входов на боковике, лучше hit-rate на трендах.</p>
+      </div>
+      <div class="tag-col">
+        <span class="tag pin">pinned</span>
+        <span class="tag">release</span>
+        <span class="tag">v2.6</span>
+        <span class="read">→ read 4 min</span>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="date"><b>09 / 05</b>2026 · 09:11 UTC</div>
+      <div class="body">
+        <h3>Починили парсинг robots.params — бот наконец-то торгует тем, что вы ему написали</h3>
+        <p>Старый баг: TEXT-поле параметров не парсилось, форма редактирования робота показывала дефолты. Бот при этом использовал устаревшие значения. Аудит + миграция + жёсткая типизация.</p>
+      </div>
+      <div class="tag-col">
+        <span class="tag live">live fix</span>
+        <span class="tag">product</span>
+        <span class="read">→ read 6 min</span>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="date"><b>03 / 05</b>2026 · 17:00 UTC</div>
+      <div class="body">
+        <h3>Hedge terminal — 200 инструментов на одном экране</h3>
+        <p>Запустили в проде хеджирующий терминал для прайвет-клиента: realtime mark-price, naked check, авто-reconcile с биржей. Ниже расскажем, как уложили 200 WS-стримов в один поток без потерь.</p>
+      </div>
+      <div class="tag-col">
+        <span class="tag">product</span>
+        <span class="tag">case-study</span>
+        <span class="read">→ read 8 min</span>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="date"><b>28 / 04</b>2026 · 11:45 UTC</div>
+      <div class="body">
+        <h3>Research: почему 73% крипто-лендингов проваливают first-paint &lt; 2s</h3>
+        <p>Прогнали 120 топовых сайтов через Lighthouse. Главный грех — 3D-сцены на hero без preload. Делимся методологией и шорт-листом «нельзя».</p>
+      </div>
+      <div class="tag-col">
+        <span class="tag">research</span>
+        <span class="read">→ read 12 min</span>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="date"><b>15 / 04</b>2026 · 20:08 UTC</div>
+      <div class="body">
+        <h3>Открыли 4 слота на Q3 / 2026</h3>
+        <p>Берём в работу проекты с trading-UI, бот-инфрой и token-launch лендингами. Ответ в течение 24 часов, NDA по запросу.</p>
+      </div>
+      <div class="tag-col">
+        <span class="tag">studio</span>
+        <span class="read">→ apply</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="news-foot">
+    <div class="sub">
+      <input placeholder="your@email" type="email">
+      <button>subscribe</button>
+    </div>
+    <a href="#" class="all">→ all posts · rss</a>
+  </div>
+</section>
+
+<section class="contact-form" id="start">
+  <div class="cf-left">
+    <h2>start a <em>project</em>.</h2>
+    <p class="lede">Расскажи коротко, что строишь. Мы вернёмся с вопросами и грубой сметой в течение 24 часов — без бойлерплейта и презентаций «о нас».</p>
+    <div class="cf-meta">
+      <div><span>response</span><b>&lt; 24h</b></div>
+      <div><span>slots Q3 / 2026</span><b>04 / 12 open</b></div>
+      <div><span>typical budget</span><b>$8k — $80k</b></div>
+      <div><span>status</span><b class="live">accepting briefs</b></div>
+    </div>
+  </div>
+
+  <form class="cf-right" onsubmit="event.preventDefault(); alert('демо — форма не отправлена');">
+    <div class="cf-grid">
+      <div class="cf-row">
+        <label>name<span class="req">*</span></label>
+        <input type="text" placeholder="Satoshi N." required>
+      </div>
+      <div class="cf-row">
+        <label>email / telegram<span class="req">*</span></label>
+        <input type="text" placeholder="hi@you.xyz / @handle" required>
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label>company / project</label>
+      <input type="text" placeholder="acme.xyz">
+    </div>
+
+    <div class="cf-row">
+      <label>what we'll work on</label>
+      <div class="cf-services">
+        <input type="checkbox" id="s1"><label for="s1">trading UI</label>
+        <input type="checkbox" id="s2"><label for="s2">brand & identity</label>
+        <input type="checkbox" id="s3"><label for="s3">frontend dev</label>
+        <input type="checkbox" id="s4"><label for="s4">bot infra</label>
+        <input type="checkbox" id="s5"><label for="s5">landing</label>
+        <input type="checkbox" id="s6"><label for="s6">other</label>
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label>budget range</label>
+      <div class="cf-budget">
+        <input type="radio" name="b" id="b1"><label for="b1">&lt; $10k</label>
+        <input type="radio" name="b" id="b2"><label for="b2">$10k — $25k</label>
+        <input type="radio" name="b" id="b3"><label for="b3">$25k — $60k</label>
+        <input type="radio" name="b" id="b4"><label for="b4">$60k+</label>
+        <input type="radio" name="b" id="b5"><label for="b5">not sure yet</label>
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label>tell us the story<span class="req">*</span></label>
+      <textarea placeholder="что строите, какие сроки, что уже есть, чего боитесь..." required></textarea>
+    </div>
+
+    <div class="cf-submit">
+      <p class="legal">отправляя форму, ты соглашаешься на NDA по запросу. брифы не передаём третьим сторонам.</p>
+      <button type="submit" class="cf-send">send brief <span class="arr">↗</span></button>
+    </div>
+  </form>
+</section>
+
+<footer id="contact">
+
+  <div class="ft-top">
+    <div class="ft-talk">
+      <h2>let's <em>talk</em>.</h2>
+      <a href="mailto:hi@impuls.studio" class="mail">hi@impuls.studio</a>
+      <span class="tg">telegram · <b>@impuls_studio</b></span>
+      <span class="tg">response · <b>&lt; 24h</b></span>
+    </div>
+
+    <div class="ft-col">
+      <h5>studio</h5>
+      <a href="work.html">Work <span class="ext">↗</span></a>
+      <a href="index.html#services">Services</a>
+      <a href="about.html">About</a>
+      <a href="index.html#dispatch">Dispatch</a>
+    </div>
+
+    <div class="ft-col">
+      <h5>practice</h5>
+      <a href="#">Trading UI</a>
+      <a href="#">Brand &amp; Identity</a>
+      <a href="#">Frontend Dev</a>
+      <a href="#">Bot Infrastructure</a>
+    </div>
+
+    <div class="ft-col">
+      <h5>contact</h5>
+      <a href="#start">Start a project</a>
+      <a href="mailto:hi@impuls.studio">hi@impuls.studio</a>
+      <a href="#">Press kit <span class="ext">PDF</span></a>
+      <a href="#">NDA template <span class="ext">PDF</span></a>
+    </div>
+  </div>
+
+  <div class="ft-mid">
+    <div class="office live">
+      <div class="name"><span class="dot"></span>Moscow</div>
+      <div class="addr"><b>HQ · UTC+3</b>Tverskaya 18,<br>Moscow, 125009</div>
+    </div>
+    <div class="office">
+      <div class="name"><span class="dot"></span>Remote</div>
+      <div class="addr"><b>worldwide · async</b>EU · Asia · Americas<br>common slot · 11–18 UTC+3</div>
+    </div>
+    <div class="office">
+      <div class="name"><span class="dot"></span>Telegram</div>
+      <div class="addr"><b>direct line</b>@impuls_studio<br>open 09–22 UTC+3</div>
+    </div>
+  </div>
+
+  <div class="ft-bot">
+    <div class="socials">
+      <a href="#" title="Twitter / X">x</a>
+      <a href="#" title="Dribbble">dr</a>
+      <a href="#" title="GitHub">gh</a>
+      <a href="#" title="Telegram">tg</a>
+      <a href="#" title="Read.cv">cv</a>
+    </div>
+    <div class="legal-row">
+      <span>© 2024 — 2026 impuls / studio</span>
+      <span class="sep">·</span>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Sitemap</a>
+      <span class="sep">·</span>
+      <span class="v">v 2.6.1 · last push 11.05</span>
+    </div>
+  </div>
+
+  <div class="ft-mark" aria-hidden="true">impuls / studio</div>
+</footer>
+
+<a href="#start" class="sticky-cta" id="stickyCta">
+  <span class="dot"></span> start a project <span class="arr">↗</span>
+</a>
+
+<script>
+  // show sticky CTA after scrolling past hero, hide near contact form
+  (() => {
+    const cta = document.getElementById('stickyCta');
+    const form = document.getElementById('start');
+    const onScroll = () => {
+      const past = window.scrollY > window.innerHeight * .7;
+      const formTop = form.getBoundingClientRect().top;
+      const near = formTop < window.innerHeight * .8;
+      cta.classList.toggle('show', past && !near);
+    };
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  })();
+</script>
+<script>
+  // cursor glow
+  document.addEventListener('mousemove', e => {
+    const g = document.querySelector('.glow');
+    g.style.setProperty('--mx', e.clientX + 'px');
+    g.style.setProperty('--my', e.clientY + 'px');
+  });
+
+  // hero canvas — candles + orbs + grid
+  (() => {
+    const cv = document.getElementById('heroCanvas');
+    const ctx = cv.getContext('2d');
+    let W, H, dpr;
+    const candles = [];
+    const orbs = [
+      {x:.2, y:.4, r:280, color:'214,255,61', vx:.00012, vy:.00008, a:.10},
+      {x:.75, y:.65, r:340, color:'255,90,31', vx:-.00009, vy:.00011, a:.07},
+      {x:.55, y:.25, r:220, color:'120,180,255', vx:.0001, vy:-.00007, a:.05},
+    ];
+    let lastPrice = 100, scrollX = 0, t = 0;
+    let rangeMin = null, rangeMax = null;
+
+    function resize(){
+      dpr = Math.min(window.devicePixelRatio||1, 2);
+      const rect = cv.getBoundingClientRect();
+      W = rect.width; H = rect.height;
+      cv.width = W*dpr; cv.height = H*dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    resize();
+    new ResizeObserver(resize).observe(cv);
+
+    // seed candles
+    const CW = 14, GAP = 4;
+    const count = Math.ceil(W / (CW+GAP)) + 20;
+    for (let i=0;i<count;i++){
+      const open = lastPrice;
+      const close = open + (Math.random()-.48) * 4;
+      const high = Math.max(open,close) + Math.random()*2.5;
+      const low  = Math.min(open,close) - Math.random()*2.5;
+      candles.push({open,close,high,low});
+      lastPrice = close;
+    }
+
+    function tick(){
+      t += 1;
+      ctx.clearRect(0,0,W,H);
+
+      // grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+      ctx.lineWidth = 1;
+      const gs = 60;
+      const offset = (t*.2) % gs;
+      for (let x=-offset; x<W; x+=gs){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y=-offset; y<H; y+=gs){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+      // orbs (soft blurred blobs)
+      orbs.forEach(o=>{
+        o.x += o.vx; o.y += o.vy;
+        if (o.x<.05||o.x>.95) o.vx*=-1;
+        if (o.y<.1||o.y>.9) o.vy*=-1;
+        const cx = o.x*W, cy = o.y*H;
+        const g = ctx.createRadialGradient(cx,cy,0,cx,cy,o.r);
+        g.addColorStop(0, `rgba(${o.color},${o.a})`);
+        g.addColorStop(1, `rgba(${o.color},0)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(cx-o.r,cy-o.r,o.r*2,o.r*2);
+      });
+
+      // candles — scrolling right→left, anchored from RIGHT edge so shift() is continuous
+      scrollX += .35;
+      if (scrollX >= CW+GAP){
+        scrollX -= (CW+GAP);
+        candles.shift();
+        const open = lastPrice;
+        const close = open + (Math.random()-.48) * 4;
+        candles.push({
+          open, close,
+          high: Math.max(open,close)+Math.random()*2.5,
+          low:  Math.min(open,close)-Math.random()*2.5
+        });
+        lastPrice = close;
+      }
+
+      // smoothly interpolate visible price range to avoid Y-axis jumps when range shifts
+      let min=Infinity,max=-Infinity;
+      candles.forEach(c=>{ if(c.low<min)min=c.low; if(c.high>max)max=c.high; });
+      const pad = (max-min)*.15;
+      const tMin = min - pad, tMax = max + pad;
+      if (rangeMin === null){ rangeMin = tMin; rangeMax = tMax; }
+      else { rangeMin += (tMin - rangeMin) * .04; rangeMax += (tMax - rangeMax) * .04; }
+      const baseY = H*.55, chartH = H*.40;
+      const py = p => baseY + chartH - ((p - rangeMin)/(rangeMax - rangeMin))*chartH;
+
+      candles.forEach((c,i)=>{
+        // anchor from right: rightmost candle is at x = W - scrollX - margin
+        const fromRight = candles.length - 1 - i;
+        const x = W - 40 - scrollX - fromRight*(CW+GAP);
+        if (x < -CW || x > W+CW) return;
+        const up = c.close >= c.open;
+        const color = up ? 'rgba(214,255,61,.55)' : 'rgba(255,90,31,.55)';
+        ctx.strokeStyle = color;
+        ctx.fillStyle = up ? 'rgba(214,255,61,.18)' : 'rgba(255,90,31,.18)';
+        ctx.lineWidth = 1;
+        // wick
+        ctx.beginPath();
+        ctx.moveTo(x+CW/2, py(c.high));
+        ctx.lineTo(x+CW/2, py(c.low));
+        ctx.stroke();
+        // body
+        const yO = py(c.open), yC = py(c.close);
+        const top = Math.min(yO,yC), bh = Math.max(2, Math.abs(yC-yO));
+        ctx.fillRect(x, top, CW, bh);
+        ctx.strokeRect(x+.5, top+.5, CW-1, bh-1);
+      });
+
+      // moving average line
+      ctx.strokeStyle = 'rgba(244,241,234,0.35)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      const period = 8;
+      for (let i=period;i<candles.length;i++){
+        let sum=0; for(let j=i-period;j<i;j++) sum+=candles[j].close;
+        const avg = sum/period;
+        const fromRight = candles.length - 1 - i;
+        const x = W - 40 - scrollX - fromRight*(CW+GAP) + CW/2;
+        const y = py(avg);
+        if (i===period) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+
+  // live-ish ticker jitter
+  setInterval(() => {
+    document.querySelectorAll('.ticker b').forEach(b => {
+      if (b.textContent.startsWith('$')) {
+        const n = parseFloat(b.textContent.replace(/[$,]/g,''));
+        const delta = (Math.random()-.5) * n * 0.001;
+        const next = (n + delta);
+        b.textContent = '$' + next.toLocaleString('en-US',{maximumFractionDigits:next>1000?0:2});
+      }
+    });
+  }, 1800);
+</script>
+</body>
+</html>

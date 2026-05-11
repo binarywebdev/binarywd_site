@@ -1,0 +1,547 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import { t } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+import { dispatch } from '~/lib/fixtures';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const services = t(lang, 'services.items') as { title: string; tags: string }[];
+const manifestoRules = t(lang, 'manifest.rules') as string[];
+const dispatchFilters = t(lang, 'dispatch.filters') as string[];
+---
+
+<Layout title="impuls / studio — crypto-native design + dev" lang={lang}>
+  <div class="glow"></div>
+
+  <div class="ticker">
+    <div class="ticker-track">
+      <span>BTC <b>$67,420</b> <b class="up">+2.41%</b></span>
+      <span>ETH <b>$3,812</b> <b class="up">+1.08%</b></span>
+      <span>SOL <b>$184.20</b> <b class="dn">-0.74%</b></span>
+      <span>STUDIO STATUS <b class="up">● ACCEPTING Q3 / 2026</b></span>
+      <span>LOCATION <b>REMOTE · UTC+3</b></span>
+      <span>BTC <b>$67,420</b> <b class="up">+2.41%</b></span>
+      <span>ETH <b>$3,812</b> <b class="up">+1.08%</b></span>
+      <span>SOL <b>$184.20</b> <b class="dn">-0.74%</b></span>
+      <span>STUDIO STATUS <b class="up">● ACCEPTING Q3 / 2026</b></span>
+      <span>LOCATION <b>REMOTE · UTC+3</b></span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-bg"><canvas id="heroCanvas"></canvas></div>
+
+    <div class="hero-meta">
+      <span>[ {t(lang, 'hero.meta1')} ]</span>
+      <span>{t(lang, 'hero.estLabel')} <b>{t(lang, 'hero.estValue')}</b></span>
+      <span>{t(lang, 'hero.kind')}</span>
+    </div>
+    <div class="hero-meta r">
+      <span>{t(lang, 'hero.slots')}</span>
+      <span>{t(lang, 'hero.response')}</span>
+      <span>{t(lang, 'hero.geo')}</span>
+    </div>
+
+    <h1 class="title">
+      {t(lang, 'hero.titleA')} <em>{t(lang, 'hero.titleEm1')}</em><br />
+      {t(lang, 'hero.titleB')} <span class="strike">{t(lang, 'hero.titleStrike')}</span> <em>{t(lang, 'hero.titleEm2')}</em><br />
+      {t(lang, 'hero.titleC')} <em>{t(lang, 'hero.titleEm3')}</em> {t(lang, 'hero.titleD')}
+    </h1>
+
+    <div class="hero-foot">
+      <p class="lede">{t(lang, 'hero.lede')} <span>{t(lang, 'hero.ledeRest')}</span></p>
+      <a href="#start" class="cta"><span class="dot"></span> {t(lang, 'common.startProject')}</a>
+    </div>
+  </section>
+
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>Trading UI</span><span>· Token Launchpads</span><span>· Bot Dashboards</span><span>· Wallet UX</span><span>· DeFi Frontends</span><span>· Market Sites</span>
+      <span>Trading UI</span><span>· Token Launchpads</span><span>· Bot Dashboards</span><span>· Wallet UX</span><span>· DeFi Frontends</span><span>· Market Sites</span>
+    </div>
+  </div>
+
+  <section class="services" id="services">
+    <div class="section-tag">{t(lang, 'services.tag')}</div>
+    <div class="svc-list">
+      {services.map((s, i) => (
+        <div class="svc">
+          <span class="num">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{s.title}</h3>
+          <div class="tags" set:html={s.tags.replace(/\s·\s/g, '<br>')} />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="manifest" id="about">
+    <p>
+      {t(lang, 'manifest.lineA')} <em>{t(lang, 'manifest.lineAEm')}</em>.<br />
+      {t(lang, 'manifest.lineB')} <span class="u">{t(lang, 'manifest.lineBU')}</span> {t(lang, 'manifest.lineC')}<br />
+      {t(lang, 'manifest.lineD')} <em>{t(lang, 'manifest.lineDEm')}</em><br />
+      {t(lang, 'manifest.lineE')} <em>{t(lang, 'manifest.lineEEm')}</em>
+    </p>
+    <div class="col-r">
+      <b>// manifest.txt</b><br /><br />
+      {manifestoRules.map((rule, i) => (
+        <>{String(i + 1).padStart(2, '0')} — {rule}<br /></>
+      ))}
+    </div>
+  </section>
+
+  <section class="news" id="dispatch">
+    <div class="news-head">
+      <h2>{t(lang, 'dispatch.head').split('/')[0]}<em>/ {t(lang, 'dispatch.head').split('/')[1]?.trim() ?? 'log'}</em></h2>
+      <div class="filters">
+        {dispatchFilters.map((f, i) => (
+          <span class:list={['chip', { on: i === 0 }]}>{f}</span>
+        ))}
+      </div>
+    </div>
+
+    <div class="news-list">
+      {dispatch.map(post => (
+        <div class="post">
+          <div class="date"><b>{post.date.day}</b>{post.date.full}</div>
+          <div class="body">
+            <h3>{post.title}</h3>
+            <p>{post.excerpt}</p>
+          </div>
+          <div class="tag-col">
+            {post.tags.map(tag => (
+              <span class:list={['tag', tag.kind ?? '']}>{tag.label}</span>
+            ))}
+            <span class="read">{post.read}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="news-foot">
+      <div class="sub">
+        <input placeholder="your@email" type="email" />
+        <button>subscribe</button>
+      </div>
+      <a href="#" class="all">→ all posts · rss</a>
+    </div>
+  </section>
+
+  <section class="contact-form" id="start">
+    <div class="cf-left">
+      <h2>{t(lang, 'contact.title').split(' ').slice(0, -1).join(' ')} <em>{t(lang, 'contact.title').split(' ').slice(-1)[0].replace('.', '')}</em>.</h2>
+      <p class="lede">{t(lang, 'contact.lede')}</p>
+      <div class="cf-meta">
+        <div><span>{t(lang, 'contact.response')}</span><b>{t(lang, 'contact.responseValue')}</b></div>
+        <div><span>{t(lang, 'contact.slots')}</span><b>{t(lang, 'contact.slotsValue')}</b></div>
+        <div><span>{t(lang, 'contact.budget')}</span><b>{t(lang, 'contact.budgetValue')}</b></div>
+        <div><span>{t(lang, 'contact.status')}</span><b class="live">{t(lang, 'contact.statusValue')}</b></div>
+      </div>
+    </div>
+
+    <form class="cf-right">
+      <div class="cf-grid">
+        <div class="cf-row">
+          <label>{t(lang, 'contact.form.name')}<span class="req">*</span></label>
+          <input type="text" placeholder={t(lang, 'contact.form.namePh')} required />
+        </div>
+        <div class="cf-row">
+          <label>{t(lang, 'contact.form.contact')}<span class="req">*</span></label>
+          <input type="text" placeholder={t(lang, 'contact.form.contactPh')} required />
+        </div>
+      </div>
+
+      <div class="cf-row">
+        <label>{t(lang, 'contact.form.company')}</label>
+        <input type="text" placeholder={t(lang, 'contact.form.companyPh')} />
+      </div>
+
+      <div class="cf-row">
+        <label>{t(lang, 'contact.form.services')}</label>
+        <div class="cf-services">
+          {['trading UI', 'brand & identity', 'frontend dev', 'bot infra', 'landing', 'other'].map((s, i) => (
+            <>
+              <input type="checkbox" id={`s${i+1}`} />
+              <label for={`s${i+1}`}>{s}</label>
+            </>
+          ))}
+        </div>
+      </div>
+
+      <div class="cf-row">
+        <label>{t(lang, 'contact.form.budget')}</label>
+        <div class="cf-budget">
+          {['< $10k', '$10k — $25k', '$25k — $60k', '$60k+', 'not sure yet'].map((b, i) => (
+            <>
+              <input type="radio" name="b" id={`b${i+1}`} />
+              <label for={`b${i+1}`}>{b}</label>
+            </>
+          ))}
+        </div>
+      </div>
+
+      <div class="cf-row">
+        <label>{t(lang, 'contact.form.story')}<span class="req">*</span></label>
+        <textarea placeholder={t(lang, 'contact.form.storyPh')} required></textarea>
+      </div>
+
+      <div class="cf-submit">
+        <p class="legal">{t(lang, 'contact.form.legal')}</p>
+        <button type="submit" class="cf-send">{t(lang, 'contact.form.send')} <span class="arr">↗</span></button>
+      </div>
+    </form>
+  </section>
+</Layout>
+
+<script>
+  // hero canvas — candles + orbs + grid (см. _design-reference/index.html)
+  (() => {
+    const cv = document.getElementById('heroCanvas') as HTMLCanvasElement | null;
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+    let W = 0, H = 0, dpr = 1;
+    const candles: { open: number; close: number; high: number; low: number }[] = [];
+    const orbs = [
+      { x: .2, y: .4, r: 280, color: '214,255,61', vx: .00012, vy: .00008, a: .10 },
+      { x: .75, y: .65, r: 340, color: '255,90,31', vx: -.00009, vy: .00011, a: .07 },
+      { x: .55, y: .25, r: 220, color: '120,180,255', vx: .0001, vy: -.00007, a: .05 }
+    ];
+    let lastPrice = 100, scrollX = 0, t = 0;
+    let rangeMin: number | null = null, rangeMax: number | null = null;
+    const CW = 14, GAP = 4;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = cv!.getBoundingClientRect();
+      W = rect.width; H = rect.height;
+      cv!.width = W * dpr; cv!.height = H * dpr;
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    new ResizeObserver(resize).observe(cv);
+
+    const count = Math.ceil(W / (CW + GAP)) + 20;
+    for (let i = 0; i < count; i++) {
+      const open = lastPrice;
+      const close = open + (Math.random() - .48) * 4;
+      const high = Math.max(open, close) + Math.random() * 2.5;
+      const low = Math.min(open, close) - Math.random() * 2.5;
+      candles.push({ open, close, high, low });
+      lastPrice = close;
+    }
+
+    function tick() {
+      t += 1;
+      ctx!.clearRect(0, 0, W, H);
+
+      ctx!.strokeStyle = 'rgba(255,255,255,0.025)';
+      ctx!.lineWidth = 1;
+      const gs = 60;
+      const offset = (t * .2) % gs;
+      for (let x = -offset; x < W; x += gs) { ctx!.beginPath(); ctx!.moveTo(x, 0); ctx!.lineTo(x, H); ctx!.stroke(); }
+      for (let y = -offset; y < H; y += gs) { ctx!.beginPath(); ctx!.moveTo(0, y); ctx!.lineTo(W, y); ctx!.stroke(); }
+
+      orbs.forEach(o => {
+        o.x += o.vx; o.y += o.vy;
+        if (o.x < .05 || o.x > .95) o.vx *= -1;
+        if (o.y < .1 || o.y > .9) o.vy *= -1;
+        const cx = o.x * W, cy = o.y * H;
+        const g = ctx!.createRadialGradient(cx, cy, 0, cx, cy, o.r);
+        g.addColorStop(0, `rgba(${o.color},${o.a})`);
+        g.addColorStop(1, `rgba(${o.color},0)`);
+        ctx!.fillStyle = g;
+        ctx!.fillRect(cx - o.r, cy - o.r, o.r * 2, o.r * 2);
+      });
+
+      scrollX += .35;
+      if (scrollX >= CW + GAP) {
+        scrollX -= (CW + GAP);
+        candles.shift();
+        const open = lastPrice;
+        const close = open + (Math.random() - .48) * 4;
+        candles.push({
+          open, close,
+          high: Math.max(open, close) + Math.random() * 2.5,
+          low: Math.min(open, close) - Math.random() * 2.5
+        });
+        lastPrice = close;
+      }
+
+      let min = Infinity, max = -Infinity;
+      candles.forEach(c => { if (c.low < min) min = c.low; if (c.high > max) max = c.high; });
+      const pad = (max - min) * .15;
+      const tMin = min - pad, tMax = max + pad;
+      if (rangeMin === null) { rangeMin = tMin; rangeMax = tMax; }
+      else { rangeMin += (tMin - rangeMin) * .04; rangeMax! += (tMax - rangeMax!) * .04; }
+      const baseY = H * .55, chartH = H * .40;
+      const py = (p: number) => baseY + chartH - ((p - rangeMin!) / (rangeMax! - rangeMin!)) * chartH;
+
+      candles.forEach((c, i) => {
+        const fromRight = candles.length - 1 - i;
+        const x = W - 40 - scrollX - fromRight * (CW + GAP);
+        if (x < -CW || x > W + CW) return;
+        const up = c.close >= c.open;
+        const color = up ? 'rgba(214,255,61,.55)' : 'rgba(255,90,31,.55)';
+        ctx!.strokeStyle = color;
+        ctx!.fillStyle = up ? 'rgba(214,255,61,.18)' : 'rgba(255,90,31,.18)';
+        ctx!.lineWidth = 1;
+        ctx!.beginPath();
+        ctx!.moveTo(x + CW / 2, py(c.high));
+        ctx!.lineTo(x + CW / 2, py(c.low));
+        ctx!.stroke();
+        const yO = py(c.open), yC = py(c.close);
+        const top = Math.min(yO, yC), bh = Math.max(2, Math.abs(yC - yO));
+        ctx!.fillRect(x, top, CW, bh);
+        ctx!.strokeRect(x + .5, top + .5, CW - 1, bh - 1);
+      });
+
+      ctx!.strokeStyle = 'rgba(244,241,234,0.35)';
+      ctx!.lineWidth = 1.2;
+      ctx!.beginPath();
+      const period = 8;
+      for (let i = period; i < candles.length; i++) {
+        let sum = 0; for (let j = i - period; j < i; j++) sum += candles[j].close;
+        const avg = sum / period;
+        const fromRight = candles.length - 1 - i;
+        const x = W - 40 - scrollX - fromRight * (CW + GAP) + CW / 2;
+        const y = py(avg);
+        if (i === period) ctx!.moveTo(x, y); else ctx!.lineTo(x, y);
+      }
+      ctx!.stroke();
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+
+  // cursor glow + ticker jitter
+  document.addEventListener('mousemove', e => {
+    const g = document.querySelector('.glow') as HTMLElement | null;
+    if (!g) return;
+    g.style.setProperty('--mx', e.clientX + 'px');
+    g.style.setProperty('--my', e.clientY + 'px');
+  });
+
+  setInterval(() => {
+    document.querySelectorAll<HTMLElement>('.ticker b').forEach(b => {
+      const txt = b.textContent ?? '';
+      if (txt.startsWith('$')) {
+        const n = parseFloat(txt.replace(/[$,]/g, ''));
+        const delta = (Math.random() - .5) * n * 0.001;
+        const next = (n + delta);
+        b.textContent = '$' + next.toLocaleString('en-US', { maximumFractionDigits: next > 1000 ? 0 : 2 });
+      }
+    });
+  }, 1800);
+</script>
+
+<style>
+  /* cursor glow */
+  .glow {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 30%), rgba(214, 255, 61, .08), transparent 40%);
+    transition: background .2s;
+  }
+
+  /* ticker */
+  .ticker {
+    position: fixed; top: 64px; left: 0; right: 0; z-index: 40;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: rgba(10, 10, 10, .7); backdrop-filter: blur(8px);
+    overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .05em;
+  }
+  .ticker-track { display: inline-flex; white-space: nowrap; padding: 10px 0; animation: scroll 60s linear infinite; }
+  .ticker span { margin-right: 48px; color: var(--muted); }
+  .ticker span b { color: var(--ink); font-weight: 600; margin-left: 8px; }
+  .ticker span .up { color: var(--acid); }
+  .ticker span .dn { color: var(--warm); }
+
+  /* hero */
+  .hero {
+    min-height: 100vh; padding: 160px 32px 80px; position: relative;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; overflow: hidden;
+  }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .hero-bg :global(canvas) { display: block; width: 100%; height: 100%; }
+  .hero-bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(10, 10, 10, .4) 0%, rgba(10, 10, 10, 0) 30%, rgba(10, 10, 10, 0) 70%, rgba(10, 10, 10, .8) 100%);
+    pointer-events: none;
+  }
+  .hero > :global(*:not(.hero-bg)) { position: relative; z-index: 1; }
+
+  .hero-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .15em; display: flex; flex-direction: column; gap: 8px;
+  }
+  .hero-meta.r { text-align: right; }
+  .hero-meta b { color: var(--ink); font-weight: 400; }
+
+  h1.title {
+    grid-column: 1/-1; font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(64px, 12vw, 200px); line-height: .88; letter-spacing: -.03em; margin-top: 40px;
+  }
+  h1.title em { font-style: italic; color: var(--acid); }
+  h1.title .strike { position: relative; display: inline-block; }
+  h1.title .strike::after {
+    content: ""; position: absolute; left: -2%; right: -2%; top: 54%;
+    height: 6px; background: var(--warm); transform: rotate(-2deg);
+  }
+
+  .hero-foot {
+    grid-column: 1/-1; display: flex; justify-content: space-between; align-items: flex-end;
+    margin-top: 40px; border-top: 1px solid var(--line); padding-top: 24px;
+  }
+  .lede { max-width: 520px; font-size: 18px; line-height: 1.5; }
+  .lede span { color: var(--muted); }
+  .cta {
+    display: inline-flex; align-items: center; gap: 12px; padding: 18px 28px;
+    border: 1px solid var(--ink); border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .15em; transition: .2s; cursor: pointer;
+    background: transparent; color: var(--ink);
+  }
+  .cta:hover { background: var(--acid); color: #000; border-color: var(--acid); }
+  .cta .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--acid); box-shadow: 0 0 12px var(--acid); animation: pulse 1.8s infinite; }
+
+  /* marquee */
+  .marquee {
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    overflow: hidden; padding: 24px 0;
+    font-family: 'Instrument Serif', serif; font-size: clamp(40px, 7vw, 110px);
+    letter-spacing: -.02em; white-space: nowrap;
+  }
+  .marquee-track { display: inline-flex; animation: scroll 30s linear infinite; }
+  .marquee span { margin-right: 48px; font-style: italic; opacity: .9; }
+  .marquee span:nth-child(odd) { font-style: normal; -webkit-text-stroke: 1px var(--ink); color: transparent; }
+
+  /* services */
+  .services { padding: 120px 32px; display: grid; grid-template-columns: 280px 1fr; gap: 40px; }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .15em; color: var(--muted); position: sticky; top: 120px; align-self: start;
+  }
+  .section-tag::before { content: "§ "; color: var(--acid); }
+  .svc-list { display: flex; flex-direction: column; }
+  .svc {
+    border-top: 1px solid var(--line); padding: 40px 0;
+    display: grid; grid-template-columns: 60px 1fr auto; gap: 24px; align-items: center;
+    cursor: pointer; transition: .3s;
+  }
+  .svc:last-child { border-bottom: 1px solid var(--line); }
+  .svc .num { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+  .svc h3 {
+    font-family: 'Instrument Serif', serif; font-size: clamp(36px, 5vw, 72px);
+    font-weight: 400; line-height: 1; letter-spacing: -.02em; transition: .3s;
+  }
+  .svc .tags { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; line-height: 1.8; }
+  .svc:hover { padding-left: 24px; }
+  .svc:hover h3 { color: var(--acid); font-style: italic; }
+
+  /* manifest */
+  .manifest { padding: 140px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; border-top: 1px solid var(--line); }
+  .manifest p { font-family: 'Instrument Serif', serif; font-size: clamp(28px, 3.4vw, 48px); line-height: 1.15; letter-spacing: -.01em; font-weight: 400; }
+  .manifest p em { color: var(--acid); font-style: italic; }
+  .manifest p .u { border-bottom: 2px solid var(--warm); padding-bottom: 2px; }
+  .manifest .col-r { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); line-height: 1.8; align-self: end; }
+  .manifest .col-r b { color: var(--ink); font-weight: 400; }
+
+  /* dispatch */
+  .news { padding: 120px 32px; border-top: 1px solid var(--line); }
+  .news-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 60px; gap: 40px; flex-wrap: wrap; }
+  .news-head h2 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 7vw, 96px); font-weight: 400; letter-spacing: -.02em; line-height: .95; }
+  .news-head h2 em { color: var(--acid); font-style: italic; }
+  .news-head .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .1em; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px;
+    color: var(--muted); cursor: pointer; transition: .2s;
+  }
+  .chip:hover, .chip.on { border-color: var(--ink); color: var(--ink); }
+  .chip.on { background: var(--acid); color: #000; border-color: var(--acid); }
+
+  .news-list { display: flex; flex-direction: column; }
+  .post {
+    display: grid; grid-template-columns: 140px 1fr 240px; gap: 40px;
+    padding: 36px 0; border-top: 1px solid var(--line); align-items: start;
+    cursor: pointer; transition: .3s; position: relative;
+  }
+  .post:last-child { border-bottom: 1px solid var(--line); }
+  .post::before { content: ""; position: absolute; left: -32px; top: 50%; width: 0; height: 1px; background: var(--acid); transition: .3s; }
+  .post:hover { padding-left: 24px; }
+  .post:hover::before { width: 24px; }
+  .post .date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: .05em; line-height: 1.6; }
+  .post .date :global(b) { display: block; color: var(--ink); font-size: 32px; font-weight: 400; font-family: 'Instrument Serif', serif; letter-spacing: -.02em; margin-bottom: 4px; }
+  .post .body h3 { font-family: 'Instrument Serif', serif; font-size: clamp(26px, 3vw, 40px); font-weight: 400; line-height: 1.1; letter-spacing: -.015em; margin-bottom: 14px; transition: .3s; }
+  .post:hover .body h3 { color: var(--acid); font-style: italic; }
+  .post .body p { font-size: 15px; line-height: 1.55; color: var(--muted); max-width: 560px; }
+  .post .tag-col { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
+  .post .tag { padding: 5px 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); }
+  .post .tag.pin { background: var(--acid); color: #000; border-color: var(--acid); font-weight: 600; }
+  .post .tag.live { color: var(--acid); border-color: rgba(214, 255, 61, .3); }
+  .post .tag.live::before { content: "● "; animation: pulse 1.5s infinite; }
+  .post .read { color: var(--muted); }
+  .post:hover .read { color: var(--ink); }
+
+  .news-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .news-foot .sub { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; max-width: 420px; width: 100%; }
+  .news-foot .sub input { flex: 1; background: transparent; border: 0; outline: 0; padding: 14px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink); letter-spacing: .05em; }
+  .news-foot .sub input::placeholder { color: var(--muted); text-transform: uppercase; }
+  .news-foot .sub button { background: var(--ink); color: #000; border: 0; padding: 0 22px; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; cursor: pointer; transition: .2s; }
+  .news-foot .sub button:hover { background: var(--acid); }
+  .news-foot .all { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .news-foot .all:hover { color: var(--acid); }
+
+  /* contact-form */
+  .contact-form { padding: 120px 32px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: start; position: relative; }
+  .cf-left h2 { font-family: 'Instrument Serif', serif; font-size: clamp(56px, 8vw, 120px); font-weight: 400; line-height: .9; letter-spacing: -.03em; margin-bottom: 32px; }
+  .cf-left h2 em { color: var(--acid); font-style: italic; }
+  .cf-left .lede { font-size: 17px; line-height: 1.5; color: var(--muted); max-width: 380px; margin-bottom: 40px; }
+  .cf-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); display: flex; flex-direction: column; gap: 14px; }
+  .cf-meta div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 10px; max-width: 360px; }
+  .cf-meta b { color: var(--ink); font-weight: 400; }
+  .cf-meta .live::before { content: "● "; color: var(--acid); animation: pulse 1.5s infinite; }
+
+  .cf-right { display: flex; flex-direction: column; gap: 28px; }
+  .cf-row { display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .cf-row label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); }
+  .cf-row label .req { color: var(--warm); margin-left: 4px; }
+  .cf-row input, .cf-row textarea { background: transparent; border: 0; border-bottom: 1px solid var(--line); outline: 0; padding: 14px 0; color: var(--ink); font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 300; transition: border-color .2s; }
+  .cf-row textarea { resize: vertical; min-height: 120px; }
+  .cf-row input::placeholder, .cf-row textarea::placeholder { color: #3a3a3a; }
+  .cf-row input:focus, .cf-row textarea:focus { border-color: var(--acid); }
+  .cf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+
+  .cf-budget { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .cf-budget label { cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); transition: .2s; letter-spacing: .05em; text-transform: none; }
+  .cf-budget input { display: none; }
+  .cf-budget input:checked + label { background: var(--acid); color: #000; border-color: var(--acid); }
+  .cf-budget label:hover { border-color: var(--ink); color: var(--ink); }
+
+  .cf-services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .cf-services label { cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); transition: .2s; text-transform: uppercase; letter-spacing: .1em; }
+  .cf-services input { display: none; }
+  .cf-services input:checked + label { background: var(--ink); color: #000; border-color: var(--ink); }
+
+  .cf-submit { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 20px; flex-wrap: wrap; }
+  .cf-submit .legal { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; max-width: 280px; line-height: 1.5; }
+  .cf-send { background: var(--acid); color: #000; border: 0; padding: 22px 36px; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: .18em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 14px; transition: .2s; }
+  .cf-send:hover { background: var(--ink); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(244, 241, 234, .15); }
+  .cf-send .arr { transition: transform .25s; }
+  .cf-send:hover .arr { transform: translateX(6px) rotate(-45deg); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 140px; }
+    .services { grid-template-columns: 1fr; }
+    .section-tag { position: static; }
+    .svc { grid-template-columns: 40px 1fr; gap: 16px; }
+    .svc .tags { display: none; }
+    .manifest { grid-template-columns: 1fr; }
+    .post { grid-template-columns: 1fr; gap: 14px; }
+    .post .tag-col { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+    .news-foot { flex-direction: column; gap: 20px; align-items: stretch; }
+    .contact-form { grid-template-columns: 1fr; gap: 48px; padding: 80px 24px; }
+    .cf-grid { grid-template-columns: 1fr; }
+  }
+</style>

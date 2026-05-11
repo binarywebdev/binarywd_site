@@ -1,0 +1,14 @@
+---
+import CaseView from '~/views/CaseView.astro';
+import { cases } from '~/lib/fixtures';
+
+export async function getStaticPaths() {
+  return cases.map(c => ({
+    params: { slug: c.slug },
+    props: { case: c }
+  }));
+}
+
+const { case: c } = Astro.props;
+---
+<CaseView lang="en" case={c} />
