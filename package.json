@@ -8,7 +8,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "npm run build && rsync -avz --delete --chown=www-data:www-data dist/ root@213.199.59.61:/var/www/binarywd.com/dist/",
+    "deploy:scp": "npm run build && scp -r dist/* root@213.199.59.61:/var/www/binarywd.com/dist/"
   },
   "dependencies": {
     "astro": "^4.16.0",
