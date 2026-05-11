@@ -1,75 +1,26 @@
 ---
 import '~/styles/pages/about.css';
 import Layout from '~/layouts/Layout.astro';
-import { localePath } from '~/i18n/utils';
 import type { Locale } from '~/i18n/utils';
+import { getPageAbout } from '~/lib/pocketbase';
+
+import AboutHero from '~/sections/AboutHero.astro';
+import Nums from '~/sections/Nums.astro';
+import StorySection from '~/sections/StorySection.astro';
+import FinalCta from '~/sections/FinalCta.astro';
 
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
 
-const isRu = lang === 'ru';
+const page = await getPageAbout(lang);
+const final = page?.final_meta;
 ---
 
-<Layout title="About · impuls/studio" lang={lang} active="about" withStickyCta={false}>
+<Layout lang={lang} active="about" withStickyCta={false} seo={page?.seo}>
   <div class="about">
-    <section class="hero">
-      <div class="crumbs">
-        <a href={localePath(lang, '/')}>index</a><span>/</span><span style="color:var(--ink)">about</span>
-      </div>
-
-      <h1>
-        we're <em>three</em> people<br />
-        who got <span class="strike">tired</span> <em>obsessed</em><br />
-        with crypto <em>UI</em>.
-      </h1>
-
-      <div class="hero-foot">
-        <p>
-          impuls / studio — {isRu ? 'небольшая независимая команда' : 'a small independent team'}: trader, designer & engineer.
-          <span>
-            {isRu
-              ? 'Делаем продукты для тех, кто работает на рынке каждый день: терминалы, бот-инфра, лендинги под токен-лонч.'
-              : 'We build products for people who live on the market: terminals, bot infra, token-launch landings.'}
-          </span>
-        </p>
-        <div class="meta">
-          <div>founded · <b>2024</b></div>
-          <div>headcount · <b>3 + 2 freelance</b></div>
-          <div>location · <b>remote · UTC+3</b></div>
-          <div>status · <b style="color:var(--acid)">● accepting Q3 / 2026</b></div>
-        </div>
-      </div>
-    </section>
-
-    <div class="nums">
-      <div class="num"><div class="v"><em>17</em></div><div class="k">shipped projects</div></div>
-      <div class="num"><div class="v">2<em>.5</em></div><div class="k">years live</div></div>
-      <div class="num"><div class="v"><em>$3M</em><sup>+</sup></div><div class="k">turnover on our products</div></div>
-      <div class="num"><div class="v">12</div><div class="k">live in production</div></div>
-      <div class="num"><div class="v"><em>0</em></div><div class="k">stock 3D blobs used</div></div>
-    </div>
-
-    <section class="s">
-      <div class="s-grid">
-        <div class="s-tag">[ 01 ] / story</div>
-        <div class="s-body">
-          <h2>{isRu ? 'как мы тут' : 'how we got'} <em>{isRu ? 'оказались' : 'here'}</em>.</h2>
-          <p class="big">
-            {isRu ? 'Мы начали со своей боли.' : 'We started with our own pain.'} <em>{isRu ? 'Трейдили' : 'We were trading'}</em>
-            {isRu ? ' сами — и каждый раз бесили интерфейсы, в которых критическая цифра спрятана под аккордеоном.' : ' ourselves — and were constantly annoyed by interfaces where critical data hid behind an accordion.'}
-          </p>
-          <p>{isRu
-            ? 'В 2024 собрали первый внутренний инструмент — бот с админкой для управления стратегией. Через месяц нас попросили сделать «то же самое, но для друга». Через три — пришёл первый платный проект.'
-            : 'In 2024 we built our first internal tool — a bot with an admin to manage strategy. A month later we were asked to do "the same, but for a friend". Three months — first paid project.'}
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="final">
-      <h2>let's <em>talk</em>.</h2>
-      <a href={localePath(lang, '/') + '#start'} class="cta">start a project ↗</a>
-      <div class="meta">or write directly · <b>hi@impuls.studio</b> · <b>@impuls_studio</b></div>
-    </section>
+    <AboutHero lang={lang} data={page?.hero} />
+    <Nums items={page?.nums ?? []} />
+    <StorySection story={page?.story} />
+    <FinalCta lang={lang} meta={typeof final === 'string' ? final : null} />
   </div>
 </Layout>

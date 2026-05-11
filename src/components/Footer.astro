@@ -3,80 +3,107 @@ import '~/styles/components/footer.css';
 import type { Locale } from '~/i18n/utils';
 import { t, localePath } from '~/i18n/utils';
 
-interface Props { lang: Locale; }
-const { lang } = Astro.props;
-const f = (k: string) => t(lang, 'footer.' + k);
-const offices = t(lang, 'footer.offices');
+interface Props { lang: Locale; globals?: any; }
+const { lang, globals = null } = Astro.props;
+
+// footer_talk: { talk, talkEm, studio, practice, contact, links, copy }
+const ft = globals?.footer_talk ?? {
+  talk:     t(lang, 'footer.talk'),
+  talkEm:   t(lang, 'footer.talkEm'),
+  studio:   t(lang, 'footer.studio'),
+  practice: t(lang, 'footer.practice'),
+  contact:  t(lang, 'footer.contact'),
+  links:    t(lang, 'footer.links'),
+  copy:     t(lang, 'footer.copy'),
+};
+
+// offices: [{ name, tag, addr, live? }]
+const officesRaw = globals?.offices ?? Object.values(t(lang, 'footer.offices') as object);
+const offices = (officesRaw as any[]).map((o: any) => ({
+  name: o.name,
+  tag:  o.tag,
+  addr: (o.addr ?? '').replace(/\\n/g, '\n'),
+  live: !!o.live,
+}));
+
+const socials = globals?.social_links ?? [
+  { key: 'x',  label: 'x',  url: '#' },
+  { key: 'dr', label: 'dr', url: '#' },
+  { key: 'gh', label: 'gh', url: '#' },
+  { key: 'tg', label: 'tg', url: '#' },
+  { key: 'cv', label: 'cv', url: '#' },
+];
+
+const legal = globals?.legal ?? t(lang, 'footer.legal');
+
+// контактные мета — синглетоны с лёгкими дефолтами
+const contact = {
+  email:       globals?.contact_email    ?? 'hi@impuls.studio',
+  telegram:    globals?.contact_telegram ?? '@impuls_studio',
+  responseSla: globals?.response_sla     ?? '< 24h',
+  version:     globals?.version          ?? 'v 0.1.0 · astro + pb',
+};
 ---
 
 <footer id="contact">
   <div class="ft-top">
     <div class="ft-talk">
-      <h2>{f('talk').replace(f('talkEm'), '')}<em>{f('talkEm')}</em>.</h2>
-      <a href="mailto:hi@impuls.studio" class="mail">hi@impuls.studio</a>
-      <span class="tg">{f('telegram')} · <b>@impuls_studio</b></span>
-      <span class="tg">{f('response')} · <b>&lt; 24h</b></span>
+      <h2>{ft.talk?.replace(ft.talkEm, '')}<em>{ft.talkEm}</em>.</h2>
+      <a href={`mailto:${contact.email}`} class="mail">{contact.email}</a>
+      <span class="tg">telegram · <b>{contact.telegram}</b></span>
+      <span class="tg">response · <b>{contact.responseSla}</b></span>
     </div>
 
     <div class="ft-col">
-      <h5>{f('studio')}</h5>
-      <a href={localePath(lang, '/work')}>{f('links.work')} <span class="ext">↗</span></a>
-      <a href={localePath(lang, '/') + '#services'}>{f('links.services')}</a>
-      <a href={localePath(lang, '/about')}>{f('links.about')}</a>
-      <a href={localePath(lang, '/') + '#dispatch'}>{f('links.dispatch')}</a>
+      <h5>{ft.studio}</h5>
+      <a href={localePath(lang, '/work')}>{ft.links?.work} <span class="ext">↗</span></a>
+      <a href={localePath(lang, '/') + '#services'}>{ft.links?.services}</a>
+      <a href={localePath(lang, '/about')}>{ft.links?.about}</a>
+      <a href={localePath(lang, '/') + '#dispatch'}>{ft.links?.dispatch}</a>
     </div>
 
     <div class="ft-col">
-      <h5>{f('practice')}</h5>
-      <a href="#">{f('links.tradingUi')}</a>
-      <a href="#">{f('links.brand')}</a>
-      <a href="#">{f('links.frontend')}</a>
-      <a href="#">{f('links.botInfra')}</a>
+      <h5>{ft.practice}</h5>
+      <a href="#">{ft.links?.tradingUi}</a>
+      <a href="#">{ft.links?.brand}</a>
+      <a href="#">{ft.links?.frontend}</a>
+      <a href="#">{ft.links?.botInfra}</a>
     </div>
 
     <div class="ft-col">
-      <h5>{f('contact')}</h5>
-      <a href={localePath(lang, '/') + '#start'}>{f('links.start')}</a>
-      <a href="mailto:hi@impuls.studio">hi@impuls.studio</a>
-      <a href="#">{f('links.press')} <span class="ext">PDF</span></a>
-      <a href="#">{f('links.nda')} <span class="ext">PDF</span></a>
+      <h5>{ft.contact}</h5>
+      <a href={localePath(lang, '/') + '#start'}>{ft.links?.start}</a>
+      <a href={`mailto:${contact.email}`}>{contact.email}</a>
+      <a href="#">{ft.links?.press} <span class="ext">PDF</span></a>
+      <a href="#">{ft.links?.nda} <span class="ext">PDF</span></a>
     </div>
   </div>
 
   <div class="ft-mid">
-    <div class="office live">
-      <div class="name"><span class="dot"></span>{offices.moscow.name}</div>
-      <div class="addr"><b>{offices.moscow.tag}</b>{offices.moscow.addr}</div>
-    </div>
-    <div class="office">
-      <div class="name"><span class="dot"></span>{offices.remote.name}</div>
-      <div class="addr" set:html={`<b>${offices.remote.tag}</b>${offices.remote.addr.replace(/\\n/g, '<br>')}`}></div>
-    </div>
-    <div class="office">
-      <div class="name"><span class="dot"></span>{offices.telegram.name}</div>
-      <div class="addr" set:html={`<b>${offices.telegram.tag}</b>${offices.telegram.addr.replace(/\\n/g, '<br>')}`}></div>
-    </div>
+    {offices.map((o) => (
+      <div class:list={['office', { live: o.live }]}>
+        <div class="name"><span class="dot"></span>{o.name}</div>
+        <div class="addr" set:html={`<b>${o.tag}</b>${o.addr.replace(/\n/g, '<br>')}`} />
+      </div>
+    ))}
   </div>
 
   <div class="ft-bot">
     <div class="socials">
-      <a href="#" title="Twitter / X">x</a>
-      <a href="#" title="Dribbble">dr</a>
-      <a href="#" title="GitHub">gh</a>
-      <a href="#" title="Telegram">tg</a>
-      <a href="#" title="Read.cv">cv</a>
+      {socials.map((s: any) => (
+        <a href={s.url} title={s.label}>{s.label}</a>
+      ))}
     </div>
     <div class="legal-row">
-      <span>{f('copy')}</span>
+      <span>{ft.copy}</span>
       <span class="sep">·</span>
-      <a href="#">{f('legal.privacy')}</a>
-      <a href="#">{f('legal.terms')}</a>
-      <a href="#">{f('legal.sitemap')}</a>
+      <a href="#">{legal.privacy}</a>
+      <a href="#">{legal.terms}</a>
+      <a href="#">{legal.sitemap}</a>
       <span class="sep">·</span>
-      <span class="v">v 0.1.0 · astro + pb</span>
+      <span class="v">{contact.version}</span>
     </div>
   </div>
 
   <div class="ft-mark" aria-hidden="true">impuls / studio</div>
 </footer>
-

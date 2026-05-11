@@ -1,0 +1,68 @@
+---
+import { t } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+import type { DispatchPost } from '~/lib/fixtures';
+
+interface Props {
+  lang: Locale;
+  posts: DispatchPost[];
+  head?: string | null;
+  filters?: string[] | null;
+  emailPh?: string | null;
+  subscribeLabel?: string | null;
+  allLabel?: string | null;
+}
+const {
+  lang,
+  posts,
+  head:    headProp    = null,
+  filters: filtersProp = null,
+  emailPh:        emailPhProp        = null,
+  subscribeLabel: subscribeLabelProp = null,
+  allLabel:       allLabelProp       = null,
+} = Astro.props;
+
+const head = headProp ?? t(lang, 'dispatch.head') as string;
+const [headLeft, headRight = 'log'] = head.split('/').map(s => s.trim());
+const filters = filtersProp ?? (t(lang, 'dispatch.filters') as string[]);
+const emailPh        = emailPhProp        ?? 'your@email';
+const subscribeLabel = subscribeLabelProp ?? 'subscribe';
+const allLabel       = allLabelProp       ?? '→ all posts · rss';
+---
+
+<section class="news" id="dispatch">
+  <div class="news-head">
+    <h2>{headLeft} <em>/ {headRight}</em></h2>
+    <div class="filters">
+      {filters.map((f, i) => (
+        <span class:list={['chip', { on: i === 0 }]}>{f}</span>
+      ))}
+    </div>
+  </div>
+
+  <div class="news-list">
+    {posts.map(post => (
+      <div class="post">
+        <div class="date"><b>{post.date.day}</b>{post.date.full}</div>
+        <div class="body">
+          <h3>{post.title}</h3>
+          <p>{post.excerpt}</p>
+        </div>
+        <div class="tag-col">
+          {post.tags.map(tag => (
+            <span class:list={['tag', tag.kind ?? '']}>{tag.label}</span>
+          ))}
+          <span class="read">{post.read}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="news-foot">
+    <div class="sub">
+      <input placeholder={emailPh} type="email" />
+      <button>{subscribeLabel}</button>
+    </div>
+    <a href="#" class="all">{allLabel}</a>
+  </div>
+</section>

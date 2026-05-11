@@ -1,0 +1,14 @@
+---
+interface Props { items?: string[] | null; }
+const { items = null } = Astro.props;
+
+const fallback = ['Trading UI', '· Token Launchpads', '· Bot Dashboards', '· Wallet UX', '· DeFi Frontends', '· Market Sites'];
+const source = items?.length ? items : fallback;
+const track = [...source, ...source];
+---
+
+<div class="marquee">
+  <div class="marquee-track">
+    {track.map(item => <span>{item}</span>)}
+  </div>
+</div>

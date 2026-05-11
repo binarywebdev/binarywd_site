@@ -1,0 +1,13 @@
+---
+interface Props { items: any[]; }
+const { items = [] } = Astro.props;
+---
+
+<div class="nums">
+  {items.map(n => (
+    <div class="num">
+      <div class="v" set:html={n.v} />
+      <div class="k">{n.k}</div>
+    </div>
+  ))}
+</div>

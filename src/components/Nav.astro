@@ -6,19 +6,27 @@ import { t, localePath, otherLocale } from '~/i18n/utils';
 interface Props {
   lang: Locale;
   active?: 'work' | 'services' | 'about' | 'contact' | null;
+  globals?: any;
 }
 
-const { lang, active = null } = Astro.props;
+const { lang, active = null, globals = null } = Astro.props;
 const home = localePath(lang, '/');
+
+const labels = globals?.nav_labels ?? {
+  work: t(lang, 'nav.work'),
+  services: t(lang, 'nav.services'),
+  about: t(lang, 'nav.about'),
+  contact: t(lang, 'nav.contact'),
+};
 ---
 
 <nav>
   <div class="logo"><a href={home}>impuls<i>/studio</i></a></div>
   <ul>
-    <li class:list={[{ on: active === 'work' }]}><a href={localePath(lang, '/work')}>{t(lang, 'nav.work')}</a></li>
-    <li class:list={[{ on: active === 'services' }]}><a href={home + '#services'}>{t(lang, 'nav.services')}</a></li>
-    <li class:list={[{ on: active === 'about' }]}><a href={localePath(lang, '/about')}>{t(lang, 'nav.about')}</a></li>
-    <li class:list={[{ on: active === 'contact' }]}><a href={home + '#start'}>{t(lang, 'nav.contact')}</a></li>
+    <li class:list={[{ on: active === 'work' }]}><a href={localePath(lang, '/work')}>{labels.work}</a></li>
+    <li class:list={[{ on: active === 'services' }]}><a href={home + '#services'}>{labels.services}</a></li>
+    <li class:list={[{ on: active === 'about' }]}><a href={localePath(lang, '/about')}>{labels.about}</a></li>
+    <li class:list={[{ on: active === 'contact' }]}><a href={home + '#start'}>{labels.contact}</a></li>
     <li class="lang"><a href={localePath(otherLocale(lang), Astro.url.pathname.replace(/^\/en/, '') || '/')}>{otherLocale(lang)}</a></li>
   </ul>
 </nav>

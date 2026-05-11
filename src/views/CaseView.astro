@@ -1,58 +1,88 @@
 ---
 import '~/styles/pages/case.css';
 import Layout from '~/layouts/Layout.astro';
-import { t, localePath } from '~/i18n/utils';
+import { localePath } from '~/i18n/utils';
 import type { Locale } from '~/i18n/utils';
 import type { CaseRow } from '~/lib/fixtures';
+import FinalCta from '~/sections/FinalCta.astro';
 
-interface Props { lang: Locale; case: CaseRow; }
+interface Props { lang: Locale; case: CaseRow & Record<string, any>; }
 const { lang, case: c } = Astro.props;
+
+// SEO per case — поле seo (json) на коллекции cases
+const seo = c.seo ?? {
+  title: `${c.title} · case · impuls / studio`,
+  description: c.sub,
+  canonical_path: (lang === 'ru' ? '' : '/en') + `/work/${c.slug}`,
+};
+
+// Заголовок: последнее слово выделяем em
+const titleParts = (c.title ?? '').split(' ');
+const titleLead  = titleParts.slice(0, -1).join(' ');
+const titleEm    = titleParts.slice(-1)[0];
+
+// body_blocks — массив локализованных секций из PB. Если пусто — заглушка.
+const blocks = (c as any).body_blocks ?? [];
+
+// Подписи лейблов — пока хардкод-дефолты, в будущем уедут в globals.case_labels
+const labels = {
+  client:   'client',
+  year:     'year',
+  category: 'category',
+  status:   'status',
+  big_label: 'case visual',
+  final_title: "build something",
+  final_em:    'compounds',
+};
 ---
 
-<Layout title={`${c.title} · Case · impuls/studio`} lang={lang} active="work" withStickyCta={false}>
+<Layout lang={lang} active="work" withStickyCta={false} seo={seo}>
   <div class="case">
     <div class="progress" id="progress"></div>
 
     <section class="hero">
       <div class="crumbs">
-        <a href={localePath(lang, '/')}>index</a><span>/</span><a href={localePath(lang, '/work')}>work</a><span>/</span>
+        <a href={localePath(lang, '/')}>index</a><span>/</span>
+        <a href={localePath(lang, '/work')}>work</a><span>/</span>
         <span style="color:var(--ink)">{c.slug}</span>
       </div>
 
       <div class="hero-grid">
         <div>
-          <h1>{c.title.split(' ').slice(0, -1).join(' ')} <em>{c.title.split(' ').slice(-1)[0]}</em></h1>
+          <h1>{titleLead} <em>{titleEm}</em></h1>
           <p class="lede">{c.sub}.</p>
         </div>
 
         <div class="facts">
-          <div class="fact"><span>client</span><b>—</b></div>
-          <div class="fact"><span>year</span><b>{c.year.replace("'", "20")}</b></div>
-          <div class="fact"><span>category</span><b>{c.category}</b></div>
-          <div class="fact"><span>status</span><b class={c.status === 'live' ? 'live' : ''}>{c.status}</b></div>
+          <div class="fact"><span>{labels.client}</span><b>{c.client ?? '—'}</b></div>
+          <div class="fact"><span>{labels.year}</span><b>{c.year?.replace?.("'", "20") ?? c.year}</b></div>
+          <div class="fact"><span>{labels.category}</span><b>{c.category}</b></div>
+          <div class="fact"><span>{labels.status}</span><b class={c.status === 'live' ? 'live' : ''}>{c.status}</b></div>
         </div>
       </div>
     </section>
 
     <div class="bigvis">
-      <div class="label"><b>{c.title}</b> · case visual</div>
+      <div class="label"><b>{c.title}</b> · {labels.big_label}</div>
     </div>
 
-    <section class="s">
-      <div class="s-grid">
-        <div class="s-tag">[ 01 ] / context</div>
-        <div class="s-body">
-          <h2>case body — <em>port от reference</em></h2>
-          <p>Это базовый шаблон кейса. Полный контент (problem ↔ solution, process steps, stats, gallery, quote, stack) подтянем из PocketBase, как только настроим коллекцию <code>cases</code> с полями <code>body_blocks</code>.</p>
-          <p>Сейчас рендерится из <code>src/lib/fixtures.ts</code> — там <code>CaseRow</code> содержит только мета-поля. После миграции на PB этот же view будет получать <code>case.body</code> массивом блоков и разворачивать их.</p>
-        </div>
-      </div>
-    </section>
+    {blocks.length > 0 && (
+      <Fragment>
+        {blocks.map((b: any, i: number) => (
+          <section class="s">
+            <div class="s-grid">
+              <div class="s-tag">{`[ ${String(i + 1).padStart(2, '0')} ]`} / {b.tag ?? 'section'}</div>
+              <div class="s-body">
+                {b.h2 && <h2 set:html={b.h2} />}
+                {(b.paragraphs ?? [b.body]).filter(Boolean).map((p: string) => <p set:html={p} />)}
+              </div>
+            </div>
+          </section>
+        ))}
+      </Fragment>
+    )}
 
-    <section class="final">
-      <h2>build something<br>that <em>compounds</em>.</h2>
-      <a href={localePath(lang, '/') + '#start'} class="cta">{t(lang, 'common.startProject')} ↗</a>
-    </section>
+    <FinalCta lang={lang} title={labels.final_title} em={labels.final_em} cta="start a project" />
   </div>
 </Layout>
 

@@ -1,0 +1,28 @@
+---
+// Бегущая строка. Контент — из globals.ticker_items.
+// Каждый элемент: { text, value?, kind?: 'up'|'dn', delta? }
+interface Props { items?: any[] | null; }
+const { items = null } = Astro.props;
+
+const fallback = [
+  { text: 'BTC', value: '$67,420', kind: 'up', delta: '+2.41%' },
+  { text: 'ETH', value: '$3,812',  kind: 'up', delta: '+1.08%' },
+  { text: 'SOL', value: '$184.20', kind: 'dn', delta: '-0.74%' },
+  { text: 'STUDIO STATUS', value: '● ACCEPTING Q3 / 2026', kind: 'up' },
+  { text: 'LOCATION', value: 'REMOTE · UTC+3' },
+];
+const source = items?.length ? items : fallback;
+const track = [...source, ...source];  // дублируем для seamless-цикла
+---
+
+<div class="ticker">
+  <div class="ticker-track">
+    {track.map(it => (
+      <span>
+        {it.text}
+        {it.value && <b>{it.value}</b>}
+        {it.delta && <b class={it.kind === 'dn' ? 'dn' : 'up'}>{it.delta}</b>}
+      </span>
+    ))}
+  </div>
+</div>

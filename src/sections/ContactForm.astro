@@ -1,0 +1,93 @@
+---
+import { t } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  data?: any | null;        // объект contact_form из page_index
+  options?: any | null;     // { services: string[], budget: string[] }
+}
+const { lang, data: dataProp = null, options: optionsProp = null } = Astro.props;
+const d = dataProp ?? t(lang, 'contact');
+
+// Заголовок: последнее слово — em.
+const title = (d.title ?? '') as string;
+const parts = title.split(' ');
+const titleLead = parts.slice(0, -1).join(' ');
+const titleEm   = parts.slice(-1)[0].replace('.', '');
+
+// Опции списков — могут приехать из PB, иначе дефолты
+const serviceOptions = optionsProp?.services ?? d.options?.services ?? [
+  'trading UI', 'brand & identity', 'frontend dev', 'bot infra', 'landing', 'other',
+];
+const budgetOptions = optionsProp?.budget ?? d.options?.budget ?? [
+  '< $10k', '$10k — $25k', '$25k — $60k', '$60k+', 'not sure yet',
+];
+
+const form = d.form ?? {};
+---
+
+<section class="contact-form" id="start">
+  <div class="cf-left">
+    <h2>{titleLead} <em>{titleEm}</em>.</h2>
+    <p class="lede">{d.lede}</p>
+    <div class="cf-meta">
+      <div><span>{d.response}</span><b>{d.responseValue}</b></div>
+      <div><span>{d.slots}</span><b>{d.slotsValue}</b></div>
+      <div><span>{d.budget}</span><b>{d.budgetValue}</b></div>
+      <div><span>{d.status}</span><b class="live">{d.statusValue}</b></div>
+    </div>
+  </div>
+
+  <form class="cf-right">
+    <div class="cf-grid">
+      <div class="cf-row">
+        <label>{form.name}<span class="req">*</span></label>
+        <input type="text" placeholder={form.namePh} required />
+      </div>
+      <div class="cf-row">
+        <label>{form.contact}<span class="req">*</span></label>
+        <input type="text" placeholder={form.contactPh} required />
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label>{form.company}</label>
+      <input type="text" placeholder={form.companyPh} />
+    </div>
+
+    <div class="cf-row">
+      <label>{form.services}</label>
+      <div class="cf-services">
+        {serviceOptions.map((s: string, i: number) => (
+          <>
+            <input type="checkbox" id={`s${i+1}`} />
+            <label for={`s${i+1}`}>{s}</label>
+          </>
+        ))}
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label>{form.budget}</label>
+      <div class="cf-budget">
+        {budgetOptions.map((b: string, i: number) => (
+          <>
+            <input type="radio" name="b" id={`b${i+1}`} />
+            <label for={`b${i+1}`}>{b}</label>
+          </>
+        ))}
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label>{form.story}<span class="req">*</span></label>
+      <textarea placeholder={form.storyPh} required></textarea>
+    </div>
+
+    <div class="cf-submit">
+      <p class="legal">{form.legal}</p>
+      <button type="submit" class="cf-send">{form.send} <span class="arr">↗</span></button>
+    </div>
+  </form>
+</section>

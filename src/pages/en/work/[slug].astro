@@ -1,14 +1,17 @@
 ---
 import CaseView from '~/views/CaseView.astro';
-import { cases } from '~/lib/fixtures';
+import { getCases, getCase } from '~/lib/pocketbase';
 
 export async function getStaticPaths() {
-  return cases.map(c => ({
+  const cases = await getCases('en');
+  return cases.map((c: any) => ({
     params: { slug: c.slug },
     props: { case: c }
   }));
 }
 
-const { case: c } = Astro.props;
+const { case: cFromPath } = Astro.props;
+const fresh = await getCase(cFromPath.slug, 'en');
+const c = fresh ?? cFromPath;
 ---
 <CaseView lang="en" case={c} />

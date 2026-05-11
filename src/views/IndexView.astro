@@ -1,228 +1,76 @@
 ---
 import '~/styles/pages/index.css';
 import Layout from '~/layouts/Layout.astro';
-import { t, localePath } from '~/i18n/utils';
 import type { Locale } from '~/i18n/utils';
-import { dispatch } from '~/lib/fixtures';
-import { getCases } from '~/lib/pocketbase';
+import { getCases, getServices, getDispatch, getPageIndex, getGlobals } from '~/lib/pocketbase';
+import { dispatch as fxDispatch } from '~/lib/fixtures';
+
+import Ticker from '~/sections/Ticker.astro';
+import Hero from '~/sections/Hero.astro';
+import Marquee from '~/sections/Marquee.astro';
+import Services from '~/sections/Services.astro';
+import SelectedWork from '~/sections/SelectedWork.astro';
+import Manifest from '~/sections/Manifest.astro';
+import Dispatch from '~/sections/Dispatch.astro';
+import ContactForm from '~/sections/ContactForm.astro';
 
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
-const services = t(lang, 'services.items') as { title: string; tags: string }[];
-const manifestoRules = t(lang, 'manifest.rules') as string[];
-const dispatchFilters = t(lang, 'dispatch.filters') as string[];
 
-// Топ-6 кейсов для лендинга. Полный список — на /work.
-const featuredCases = (await getCases(lang)).slice(0, 6);
+// Все PB-запросы параллельно
+const [featuredCases, servicesData, dispatchRaw, pageIndex, globals] = await Promise.all([
+  getCases(lang).then(rows => rows.slice(0, 6)),
+  getServices(lang),
+  getDispatch(lang, 5),
+  getPageIndex(lang),
+  getGlobals(lang),
+]);
+
+// services → форма для <Services />
+const services = servicesData.length
+  ? servicesData.map((s: any) => ({
+      title: s.title,
+      tags: Array.isArray(s.tags) ? s.tags.join(' · ') : (s.tags ?? ''),
+    }))
+  : null;
+
+// dispatch → форма {date, title, excerpt, tags, read}
+const dispatchPosts = dispatchRaw.length
+  ? dispatchRaw.map((p: any) => {
+      const d = p.published_at ? new Date(p.published_at) : new Date();
+      const dd = String(d.getUTCDate()).padStart(2, '0');
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const hh = String(d.getUTCHours()).padStart(2, '0');
+      const mi = String(d.getUTCMinutes()).padStart(2, '0');
+      return {
+        date: { day: `${dd} / ${mm}`, full: `${d.getUTCFullYear()} · ${hh}:${mi} UTC` },
+        title: p.title,
+        excerpt: p.excerpt,
+        tags: Array.isArray(p.tags) ? p.tags : [],
+        read: `→ read ${p.read_minutes ?? 5} min`,
+      };
+    })
+  : fxDispatch;
+
+// Заголовки и подписи блока work — из globals (если есть), иначе мини-дефолты
+const workHead = {
+  title: pageIndex?.work?.title ?? 'selected work.',
+  em:    pageIndex?.work?.em    ?? 'work',
+  link:  pageIndex?.work?.link  ?? '2024 — 2026 / 12 cases',
+};
 ---
 
-<Layout title="impuls / studio — crypto-native design + dev" lang={lang}>
+<Layout lang={lang} seo={pageIndex?.seo}>
   <div class="glow"></div>
 
-  <div class="ticker">
-    <div class="ticker-track">
-      <span>BTC <b>$67,420</b> <b class="up">+2.41%</b></span>
-      <span>ETH <b>$3,812</b> <b class="up">+1.08%</b></span>
-      <span>SOL <b>$184.20</b> <b class="dn">-0.74%</b></span>
-      <span>STUDIO STATUS <b class="up">● ACCEPTING Q3 / 2026</b></span>
-      <span>LOCATION <b>REMOTE · UTC+3</b></span>
-      <span>BTC <b>$67,420</b> <b class="up">+2.41%</b></span>
-      <span>ETH <b>$3,812</b> <b class="up">+1.08%</b></span>
-      <span>SOL <b>$184.20</b> <b class="dn">-0.74%</b></span>
-      <span>STUDIO STATUS <b class="up">● ACCEPTING Q3 / 2026</b></span>
-      <span>LOCATION <b>REMOTE · UTC+3</b></span>
-    </div>
-  </div>
-
-  <section class="hero">
-    <div class="hero-bg"><canvas id="heroCanvas"></canvas></div>
-
-    <div class="hero-meta">
-      <span>[ {t(lang, 'hero.meta1')} ]</span>
-      <span>{t(lang, 'hero.estLabel')} <b>{t(lang, 'hero.estValue')}</b></span>
-      <span>{t(lang, 'hero.kind')}</span>
-    </div>
-    <div class="hero-meta r">
-      <span>{t(lang, 'hero.slots')}</span>
-      <span>{t(lang, 'hero.response')}</span>
-      <span>{t(lang, 'hero.geo')}</span>
-    </div>
-
-    <h1 class="title">
-      {t(lang, 'hero.titleA')} <em>{t(lang, 'hero.titleEm1')}</em><br />
-      {t(lang, 'hero.titleB')} <span class="strike">{t(lang, 'hero.titleStrike')}</span> <em>{t(lang, 'hero.titleEm2')}</em><br />
-      {t(lang, 'hero.titleC')} <em>{t(lang, 'hero.titleEm3')}</em> {t(lang, 'hero.titleD')}
-    </h1>
-
-    <div class="hero-foot">
-      <p class="lede">{t(lang, 'hero.lede')} <span>{t(lang, 'hero.ledeRest')}</span></p>
-      <a href="#start" class="cta"><span class="dot"></span> {t(lang, 'common.startProject')}</a>
-    </div>
-  </section>
-
-  <div class="marquee">
-    <div class="marquee-track">
-      <span>Trading UI</span><span>· Token Launchpads</span><span>· Bot Dashboards</span><span>· Wallet UX</span><span>· DeFi Frontends</span><span>· Market Sites</span>
-      <span>Trading UI</span><span>· Token Launchpads</span><span>· Bot Dashboards</span><span>· Wallet UX</span><span>· DeFi Frontends</span><span>· Market Sites</span>
-    </div>
-  </div>
-
-  <section class="services" id="services">
-    <div class="section-tag">{t(lang, 'services.tag')}</div>
-    <div class="svc-list">
-      {services.map((s, i) => (
-        <div class="svc">
-          <span class="num">{String(i + 1).padStart(2, '0')}</span>
-          <h3>{s.title}</h3>
-          <div class="tags" set:html={s.tags.replace(/\s·\s/g, '<br>')} />
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <section class="work" id="work">
-    <div class="work-head">
-      <h2>selected <em>work</em>.</h2>
-      <a href={localePath(lang, '/work')} class="work-all">{t(lang, 'work.headMeta')} ↗</a>
-    </div>
-    <div class="work-grid">
-      {featuredCases.map((c, i) => (
-        <a href={localePath(lang, '/work/' + c.slug)} class:list={['card', 'c' + (i + 1)]}>
-          <div class="meta">
-            <span>{String(i + 1).padStart(2, '0')} / {c.slug}</span>
-            <span>{c.category}</span>
-          </div>
-          <div class="arr">↗</div>
-          <h4>{c.title} — <span class="card-sub">{c.sub}</span></h4>
-          {i === 4 && (
-            <div class="chart">
-              <svg viewBox="0 0 400 100" preserveAspectRatio="none">
-                <polyline fill="none" stroke="#d6ff3d" stroke-width="1.5" points="0,70 30,60 60,68 90,40 120,50 150,30 180,42 210,20 240,28 270,12 300,22 330,8 360,18 400,5" />
-                <polyline fill="none" stroke="#ff5a1f" stroke-width="1" opacity=".5" points="0,80 50,75 100,72 150,68 200,60 250,55 300,48 350,42 400,38" />
-              </svg>
-            </div>
-          )}
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="manifest" id="about">
-    <p>
-      {t(lang, 'manifest.lineA')} <em>{t(lang, 'manifest.lineAEm')}</em>.<br />
-      {t(lang, 'manifest.lineB')} <span class="u">{t(lang, 'manifest.lineBU')}</span> {t(lang, 'manifest.lineC')}<br />
-      {t(lang, 'manifest.lineD')} <em>{t(lang, 'manifest.lineDEm')}</em><br />
-      {t(lang, 'manifest.lineE')} <em>{t(lang, 'manifest.lineEEm')}</em>
-    </p>
-    <div class="col-r">
-      <b>// manifest.txt</b><br /><br />
-      {manifestoRules.map((rule, i) => (
-        <>{String(i + 1).padStart(2, '0')} — {rule}<br /></>
-      ))}
-    </div>
-  </section>
-
-  <section class="news" id="dispatch">
-    <div class="news-head">
-      <h2>{t(lang, 'dispatch.head').split('/')[0]}<em>/ {t(lang, 'dispatch.head').split('/')[1]?.trim() ?? 'log'}</em></h2>
-      <div class="filters">
-        {dispatchFilters.map((f, i) => (
-          <span class:list={['chip', { on: i === 0 }]}>{f}</span>
-        ))}
-      </div>
-    </div>
-
-    <div class="news-list">
-      {dispatch.map(post => (
-        <div class="post">
-          <div class="date"><b>{post.date.day}</b>{post.date.full}</div>
-          <div class="body">
-            <h3>{post.title}</h3>
-            <p>{post.excerpt}</p>
-          </div>
-          <div class="tag-col">
-            {post.tags.map(tag => (
-              <span class:list={['tag', tag.kind ?? '']}>{tag.label}</span>
-            ))}
-            <span class="read">{post.read}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <div class="news-foot">
-      <div class="sub">
-        <input placeholder="your@email" type="email" />
-        <button>subscribe</button>
-      </div>
-      <a href="#" class="all">→ all posts · rss</a>
-    </div>
-  </section>
-
-  <section class="contact-form" id="start">
-    <div class="cf-left">
-      <h2>{t(lang, 'contact.title').split(' ').slice(0, -1).join(' ')} <em>{t(lang, 'contact.title').split(' ').slice(-1)[0].replace('.', '')}</em>.</h2>
-      <p class="lede">{t(lang, 'contact.lede')}</p>
-      <div class="cf-meta">
-        <div><span>{t(lang, 'contact.response')}</span><b>{t(lang, 'contact.responseValue')}</b></div>
-        <div><span>{t(lang, 'contact.slots')}</span><b>{t(lang, 'contact.slotsValue')}</b></div>
-        <div><span>{t(lang, 'contact.budget')}</span><b>{t(lang, 'contact.budgetValue')}</b></div>
-        <div><span>{t(lang, 'contact.status')}</span><b class="live">{t(lang, 'contact.statusValue')}</b></div>
-      </div>
-    </div>
-
-    <form class="cf-right">
-      <div class="cf-grid">
-        <div class="cf-row">
-          <label>{t(lang, 'contact.form.name')}<span class="req">*</span></label>
-          <input type="text" placeholder={t(lang, 'contact.form.namePh')} required />
-        </div>
-        <div class="cf-row">
-          <label>{t(lang, 'contact.form.contact')}<span class="req">*</span></label>
-          <input type="text" placeholder={t(lang, 'contact.form.contactPh')} required />
-        </div>
-      </div>
-
-      <div class="cf-row">
-        <label>{t(lang, 'contact.form.company')}</label>
-        <input type="text" placeholder={t(lang, 'contact.form.companyPh')} />
-      </div>
-
-      <div class="cf-row">
-        <label>{t(lang, 'contact.form.services')}</label>
-        <div class="cf-services">
-          {['trading UI', 'brand & identity', 'frontend dev', 'bot infra', 'landing', 'other'].map((s, i) => (
-            <>
-              <input type="checkbox" id={`s${i+1}`} />
-              <label for={`s${i+1}`}>{s}</label>
-            </>
-          ))}
-        </div>
-      </div>
-
-      <div class="cf-row">
-        <label>{t(lang, 'contact.form.budget')}</label>
-        <div class="cf-budget">
-          {['< $10k', '$10k — $25k', '$25k — $60k', '$60k+', 'not sure yet'].map((b, i) => (
-            <>
-              <input type="radio" name="b" id={`b${i+1}`} />
-              <label for={`b${i+1}`}>{b}</label>
-            </>
-          ))}
-        </div>
-      </div>
-
-      <div class="cf-row">
-        <label>{t(lang, 'contact.form.story')}<span class="req">*</span></label>
-        <textarea placeholder={t(lang, 'contact.form.storyPh')} required></textarea>
-      </div>
-
-      <div class="cf-submit">
-        <p class="legal">{t(lang, 'contact.form.legal')}</p>
-        <button type="submit" class="cf-send">{t(lang, 'contact.form.send')} <span class="arr">↗</span></button>
-      </div>
-    </form>
-  </section>
+  <Ticker items={globals?.ticker_items} />
+  <Hero lang={lang} data={pageIndex?.hero} />
+  <Marquee items={pageIndex?.marquee} />
+  <Services lang={lang} services={services} />
+  <SelectedWork lang={lang} cases={featuredCases} head={workHead} />
+  <Manifest lang={lang} data={pageIndex?.manifest} rules={globals?.manifest_rules} />
+  <Dispatch lang={lang} posts={dispatchPosts} head={pageIndex?.dispatch?.head} filters={pageIndex?.dispatch?.filters} />
+  <ContactForm lang={lang} data={pageIndex?.contact_form} />
 </Layout>
 
 <script>

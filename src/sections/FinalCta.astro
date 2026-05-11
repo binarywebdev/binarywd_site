@@ -1,0 +1,25 @@
+---
+import { localePath } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  title?: string;
+  em?: string;
+  cta?: string;
+  meta?: string | null;
+}
+const {
+  lang,
+  title = "let's",
+  em = 'talk',
+  cta = 'start a project',
+  meta = null,
+} = Astro.props;
+---
+
+<section class="final">
+  <h2>{title} <em>{em}</em>.</h2>
+  <a href={localePath(lang, '/') + '#start'} class="cta">{cta} ↗</a>
+  {meta && <div class="meta" set:html={meta} />}
+</section>

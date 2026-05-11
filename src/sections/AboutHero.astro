@@ -1,0 +1,34 @@
+---
+import { localePath } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+
+interface Props { lang: Locale; data: any; }
+const { lang, data } = Astro.props;
+
+const lines = data?.title_lines ?? [];
+const meta  = data?.meta ?? [];
+---
+
+<section class="hero">
+  <div class="crumbs">
+    <a href={localePath(lang, '/')}>index</a><span>/</span><span style="color:var(--ink)">about</span>
+  </div>
+
+  <h1>
+    {lines.map((tok: any) => (
+      tok.plain ? <Fragment>{tok.plain}</Fragment>
+      : tok.em ? <em>{tok.em}</em>
+      : tok.strike ? <span class="strike">{tok.strike}</span>
+      : null
+    ))}
+  </h1>
+
+  <div class="hero-foot">
+    <p>{data?.lede} <span>{data?.lede_rest}</span></p>
+    <div class="meta">
+      {meta.map((m: any) => (
+        <div>{m.k} · <b style={m.accent ? 'color:var(--acid)' : ''}>{m.v}</b></div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,62 @@
+---
+// Рендерит <head>: title, description, og/twitter, canonical, JSON-LD.
+// Все значения мерджатся: page.seo → globals.seo_defaults → захардкоженные дефолты.
+import type { Locale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  seo?: any | null;             // из page_X.seo
+  defaults?: any | null;        // из globals.seo_defaults
+  pathname: string;
+  title?: string | null;        // override (если view хочет вручную)
+}
+
+const { lang, seo = null, defaults = null, pathname, title: titleOverride = null } = Astro.props;
+
+const SITE = (defaults?.site_name) ?? 'impuls / studio';
+const ORIGIN = (Astro.site as URL | undefined)?.origin ?? 'https://binarywd.com';
+
+const title = titleOverride
+  ?? seo?.title
+  ?? `${SITE} — crypto-native design + dev`;
+
+const description = seo?.description ?? defaults?.description ?? '';
+const keywords    = seo?.keywords    ?? defaults?.keywords    ?? '';
+const ogImage     = seo?.og_image    ?? defaults?.og_image    ?? '/og/default.png';
+const ogImageAbs  = ogImage.startsWith('http') ? ogImage : ORIGIN + ogImage;
+const themeColor  = defaults?.theme_color ?? '#0a0a0a';
+const twitter     = defaults?.twitter_handle ?? '';
+const canonical   = ORIGIN + (seo?.canonical_path ?? pathname);
+
+// JSON-LD: organization
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE,
+  url: ORIGIN,
+  ...(ogImage && { logo: ogImageAbs }),
+  ...(twitter && { sameAs: [`https://twitter.com/${twitter.replace('@', '')}`] }),
+};
+---
+
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+{keywords && <meta name="keywords" content={keywords} />}
+<meta name="theme-color" content={themeColor} />
+<link rel="canonical" href={canonical} />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageAbs} />
+<meta property="og:site_name" content={SITE} />
+<meta property="og:locale" content={lang === 'ru' ? 'ru_RU' : 'en_US'} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageAbs} />
+{twitter && <meta name="twitter:site" content={twitter} />}
+
+<script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />

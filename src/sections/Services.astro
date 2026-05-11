@@ -1,0 +1,25 @@
+---
+import { t } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  services?: { title: string; tags: string }[] | null;
+}
+const { lang, services: servicesProp = null } = Astro.props;
+// Если в PB ничего нет — упадём на JSON-словарь
+const services = servicesProp ?? (t(lang, 'services.items') as { title: string; tags: string }[]);
+---
+
+<section class="services" id="services">
+  <div class="section-tag">{t(lang, 'services.tag')}</div>
+  <div class="svc-list">
+    {services.map((s, i) => (
+      <div class="svc">
+        <span class="num">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{s.title}</h3>
+        <div class="tags" set:html={s.tags.replace(/\s·\s/g, '<br>')} />
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,44 +1,59 @@
 ---
 import '~/styles/pages/work.css';
 import Layout from '~/layouts/Layout.astro';
-import { t, localePath } from '~/i18n/utils';
+import { localePath } from '~/i18n/utils';
 import type { Locale } from '~/i18n/utils';
-import { getCases } from '~/lib/pocketbase';
+import { getCases, getPageIndex } from '~/lib/pocketbase';
 
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
-const headTitle = t(lang, 'work.headTitle');
 
-// Тянем кейсы из PocketBase. Если PB не отвечает — safeFetch автоматически
-// вернёт fixtures из src/lib/fixtures.ts, сайт всё равно соберётся.
-const cases = await getCases(lang);
+const [cases, pageIndex] = await Promise.all([getCases(lang), getPageIndex(lang)]);
+
+const head = pageIndex?.work ?? { title: 'selected work.', em: 'work' };
+const page = head.page ?? {};
+
+// Counts
+const total      = cases.length;
+const liveCount  = cases.filter(c => c.status === 'live').length;
+const byCategory = (cat: string) => cases.filter(c => c.category === cat).length;
+
+const filters = (page.filters_categories ?? [
+  { key: 'all',     label: 'all' },
+  { key: 'trading', label: 'trading' },
+  { key: 'brand',   label: 'brand' },
+  { key: 'landing', label: 'landing' },
+]) as { key: string; label: string }[];
+
+const headTitleLead = (head.title ?? '').replace((head.em ?? '') + '.', '').replace((head.em ?? ''), '');
+const endTitleLead = (page.end_title ?? '').replace((page.end_em ?? '') + '?', '').replace((page.end_em ?? ''), '');
 ---
 
-<Layout title="Work · impuls/studio" lang={lang} active="work" withStickyCta={false}>
+<Layout lang={lang} active="work" withStickyCta={false} seo={page.seo}>
   <section class="ph">
     <div class="crumbs">
       <a href={localePath(lang, '/')}>index</a><span>/</span><span style="color:var(--ink)">work</span>
     </div>
-    <h1 class="ph-title">{headTitle.replace(t(lang, 'work.headEm') + '.', '')}<em>{t(lang, 'work.headEm')}</em>.</h1>
+    <h1 class="ph-title">{headTitleLead}<em>{head.em}</em>.</h1>
     <div class="ph-meta">
-      <div>archive · <b>{cases.length} / 17</b> cases</div>
-      <div>span · <b>2024 — 2026</b></div>
-      <div>filter by <b>tag / year / status</b></div>
+      <div>{page.archive_label ?? 'archive'} · <b>{total} / {page.archive_total ?? total}</b></div>
+      <div>{page.span_label ?? 'span'} · <b>{page.span ?? ''}</b></div>
+      <div>{page.filter_label ?? 'filter by tag / year / status'}</div>
     </div>
     <div class="ph-meta r">
-      <div>under NDA · <b>5 hidden</b></div>
-      <div>live products · <b>{cases.filter(c => c.status === 'live').length}</b></div>
-      <div>next slots · <b>Q3 / 2026</b></div>
+      <div>{page.nda_label ?? 'under NDA'} · <b>{page.nda_hidden ?? 0} hidden</b></div>
+      <div>{page.live_products ?? 'live products'} · <b>{liveCount}</b></div>
+      <div>{page.next_slots ?? 'next slots'} · <b>{page.slots ?? ''}</b></div>
     </div>
   </section>
 
   <div class="filters">
-    <span class="chip on">all · {cases.length}</span>
-    <span class="chip">trading · {cases.filter(c => c.category === 'trading').length}</span>
-    <span class="chip">brand · {cases.filter(c => c.category === 'brand').length}</span>
-    <span class="chip">landing · {cases.filter(c => c.category === 'landing').length}</span>
+    {filters.map((f, i) => {
+      const count = f.key === 'all' ? total : byCategory(f.key);
+      return <span class:list={['chip', { on: i === 0 }]}>{f.label} · {count}</span>;
+    })}
     <div class="spacer"></div>
-    <div class="view">sort <b style="color:var(--ink)">/ recent</b> ↓</div>
+    <div class="view">{page.sort_label ?? 'sort / recent'} ↓</div>
   </div>
 
   <div class="list">
@@ -47,7 +62,7 @@ const cases = await getCases(lang);
         <span class="n">{String(i + 1).padStart(2, '0')}</span>
         <h3>{c.title} <span class="sub">{c.sub}</span></h3>
         <div class="tag-stack">
-          {c.tags.map((tag, idx) => idx === 0 ? <b>{tag}</b> : <span>{tag}</span>)}
+          {(c.tags ?? []).map((tag: string, idx: number) => idx === 0 ? <b>{tag}</b> : <span>{tag}</span>)}
         </div>
         <span class="year">{c.year}</span>
         <span class:list={['status', c.status]}>{c.status}</span>
@@ -57,9 +72,8 @@ const cases = await getCases(lang);
   </div>
 
   <section class="end">
-    <h2>{t(lang, 'work.endTitle').replace('similar?', '')}<em>similar</em>?</h2>
-    <p>{t(lang, 'work.endText')}</p>
-    <a href={localePath(lang, '/') + '#start'} class="cta">{t(lang, 'common.startProject')} ↗</a>
+    <h2>{endTitleLead}<em>{page.end_em ?? 'similar'}</em>?</h2>
+    <p>{page.end_text}</p>
+    <a href={localePath(lang, '/') + '#start'} class="cta">{page.cta_label ?? 'start a project'} ↗</a>
   </section>
 </Layout>
-

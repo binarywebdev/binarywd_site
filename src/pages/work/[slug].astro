@@ -1,14 +1,18 @@
 ---
 import CaseView from '~/views/CaseView.astro';
-import { cases } from '~/lib/fixtures';
+import { getCases, getCase } from '~/lib/pocketbase';
 
 export async function getStaticPaths() {
-  return cases.map(c => ({
+  const cases = await getCases('ru');
+  return cases.map((c: any) => ({
     params: { slug: c.slug },
     props: { case: c }
   }));
 }
 
-const { case: c } = Astro.props;
+const { case: cFromPath } = Astro.props;
+// если PB обновился между билдом и рендером — берём свежие данные
+const fresh = await getCase(cFromPath.slug, 'ru');
+const c = fresh ?? cFromPath;
 ---
 <CaseView lang="ru" case={c} />

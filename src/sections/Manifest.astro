@@ -1,0 +1,28 @@
+---
+import { t } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  data?: any | null;
+  rules?: string[] | null;
+}
+const { lang, data: dataProp = null, rules: rulesProp = null } = Astro.props;
+const d = dataProp ?? t(lang, 'manifest');
+const rules = rulesProp ?? (t(lang, 'manifest.rules') as string[]);
+---
+
+<section class="manifest" id="about">
+  <p>
+    {d.lineA} <em>{d.lineAEm}</em>.<br />
+    {d.lineB} <span class="u">{d.lineBU}</span> {d.lineC}<br />
+    {d.lineD} <em>{d.lineDEm}</em><br />
+    {d.lineE} <em>{d.lineEEm}</em>
+  </p>
+  <div class="col-r">
+    <b>// manifest.txt</b><br /><br />
+    {rules.map((rule, i) => (
+      <>{String(i + 1).padStart(2, '0')} — {rule}<br /></>
+    ))}
+  </div>
+</section>

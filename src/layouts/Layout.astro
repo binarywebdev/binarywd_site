@@ -3,25 +3,30 @@ import '~/styles/global.css';
 import Nav from '~/components/Nav.astro';
 import Footer from '~/components/Footer.astro';
 import StickyCta from '~/components/StickyCta.astro';
+import SeoHead from '~/components/SeoHead.astro';
 import type { Locale } from '~/i18n/utils';
+import { getGlobals } from '~/lib/pocketbase';
 
 interface Props {
-  title: string;
-  description?: string;
+  title?: string | null;
   lang?: Locale;
   active?: 'work' | 'services' | 'about' | 'contact' | null;
   withFooter?: boolean;
   withStickyCta?: boolean;
+  seo?: any | null;
 }
 
 const {
-  title,
-  description = 'impuls / studio — crypto-native design + dev',
+  title = null,
   lang = (Astro.currentLocale as Locale) ?? 'ru',
   active = null,
   withFooter = true,
-  withStickyCta = true
+  withStickyCta = true,
+  seo = null,
 } = Astro.props;
+
+const globals = await getGlobals(lang);
+const pathname = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -29,8 +34,9 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+
+    <SeoHead lang={lang} seo={seo} defaults={globals?.seo_defaults} pathname={pathname} title={title} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -39,11 +45,11 @@ const {
     />
   </head>
   <body>
-    <Nav lang={lang} active={active} />
+    <Nav lang={lang} active={active} globals={globals} />
 
     <slot />
 
-    {withFooter && <Footer lang={lang} />}
+    {withFooter && <Footer lang={lang} globals={globals} />}
     {withStickyCta && <StickyCta lang={lang} />}
   </body>
 </html>

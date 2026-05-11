@@ -1,0 +1,15 @@
+---
+interface Props { story: any; }
+const { story } = Astro.props;
+---
+
+<section class="s">
+  <div class="s-grid">
+    <div class="s-tag">{story?.tag}</div>
+    <div class="s-body">
+      <h2 set:html={story?.h2} />
+      <p class="big" set:html={story?.big} />
+      {story?.p && <p set:html={story.p} />}
+    </div>
+  </div>
+</section>

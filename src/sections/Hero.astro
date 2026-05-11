@@ -1,0 +1,40 @@
+---
+import { t } from '~/i18n/utils';
+import type { Locale } from '~/i18n/utils';
+
+interface Props {
+  lang: Locale;
+  data?: any | null;
+  cta?: string | null;
+}
+const { lang, data: heroProp = null, cta = null } = Astro.props;
+// Один объект — все строки hero. Берём из PB; чего нет — добираем из i18n.
+const d = heroProp ?? t(lang, 'hero');
+const ctaLabel = cta ?? t(lang, 'common.startProject');
+---
+
+<section class="hero">
+  <div class="hero-bg"><canvas id="heroCanvas"></canvas></div>
+
+  <div class="hero-meta">
+    <span>[ {d.meta1} ]</span>
+    <span>{d.estLabel} <b>{d.estValue}</b></span>
+    <span>{d.kind}</span>
+  </div>
+  <div class="hero-meta r">
+    <span>{d.slots}</span>
+    <span>{d.response}</span>
+    <span>{d.geo}</span>
+  </div>
+
+  <h1 class="title">
+    {d.titleA} <em>{d.titleEm1}</em><br />
+    {d.titleB} <span class="strike">{d.titleStrike}</span> <em>{d.titleEm2}</em><br />
+    {d.titleC} <em>{d.titleEm3}</em> {d.titleD}
+  </h1>
+
+  <div class="hero-foot">
+    <p class="lede">{d.lede} <span>{d.ledeRest}</span></p>
+    <a href="#start" class="cta"><span class="dot"></span> {ctaLabel}</a>
+  </div>
+</section>

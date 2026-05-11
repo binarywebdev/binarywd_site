@@ -124,7 +124,7 @@
       "nda": "NDA template"
     },
     "offices": {
-      "moscow": { "name": "Moscow", "tag": "HQ · UTC+3", "addr": "Tverskaya 18, Moscow, 125009" },
+      "moscow": { "name": "Moscow", "tag": "HQ · UTC+3", "addr": "Tverskaya 18, Moscow, 125009", "live": true },
       "remote": { "name": "Remote", "tag": "worldwide · async", "addr": "EU · Asia · Americas\\ncommon slot · 11–18 UTC+3" },
       "telegram": { "name": "Telegram", "tag": "direct line", "addr": "@impuls_studio\\nopen 09–22 UTC+3" }
     },
