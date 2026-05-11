@@ -20,7 +20,7 @@
 
 /* ── hero ────────────────────────────────────────────── */
 .hero {
-  min-height: 100vh; padding: 160px 32px 80px; position: relative;
+  min-height: 100vh; padding: 160px 32px 80px 100px; position: relative;
   display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; overflow: hidden;
 }
 .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
