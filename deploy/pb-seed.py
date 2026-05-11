@@ -179,6 +179,11 @@ def seed_globals(pb, token):
                 'copy':     d.get('footer', {}).get('copy'),
             },
             'legal': d.get('footer', {}).get('legal', {}),
+            'brand': {
+                # лого: "impuls" + accent "/studio". Если accent пустой — рендерится только name.
+                'name':   'impuls',
+                'accent': '/studio',
+            },
             'seo_defaults':     SEO_DEFAULTS[lang],
             'footer_misc':      FOOTER_MISC[lang],
             'contact_email':    'hi@impuls.studio',

@@ -18,10 +18,14 @@ const labels = globals?.nav_labels ?? {
   about: t(lang, 'nav.about'),
   contact: t(lang, 'nav.contact'),
 };
+
+const brand = globals?.brand ?? { name: 'impuls', accent: '/studio' };
 ---
 
 <nav>
-  <div class="logo"><a href={home}>impuls<i>/studio</i></a></div>
+  <div class="logo">
+    <a href={home}>{brand.name}{brand.accent && <i>{brand.accent}</i>}</a>
+  </div>
   <ul>
     <li class:list={[{ on: active === 'work' }]}><a href={localePath(lang, '/work')}>{labels.work}</a></li>
     <li class:list={[{ on: active === 'services' }]}><a href={home + '#services'}>{labels.services}</a></li>

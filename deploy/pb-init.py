@@ -292,7 +292,8 @@ def ensure_extra_fields(pb, token, existing, name, extra_fields):
 PAGE_INDEX_EXTRA = [jsonf('manifest'), jsonf('dispatch'), jsonf('work'), jsonf('seo')]
 PAGE_ABOUT_EXTRA = [jsonf('seo')]
 GLOBALS_EXTRA = [jsonf('seo_defaults'), jsonf('footer_misc'), text('contact_email'),
-                 text('contact_telegram'), text('response_sla'), text('version')]
+                 text('contact_telegram'), text('response_sla'), text('version'),
+                 jsonf('brand')]
 CASES_SEO_EXTRA = [jsonf('seo')]
 
 
