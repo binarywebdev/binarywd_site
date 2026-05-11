@@ -1,0 +1,52 @@
+.ph { padding: 160px 32px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; border-bottom: 1px solid var(--line); }
+.crumbs { grid-column: 1/-1; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; margin-bottom: 32px; }
+.crumbs a:hover { color: var(--acid); }
+.crumbs span { margin: 0 10px; opacity: .4; }
+h1.ph-title { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(72px, 13vw, 220px); line-height: .85; letter-spacing: -.03em; grid-column: 1/-1; }
+h1.ph-title em { font-style: italic; color: var(--acid); }
+.ph-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; line-height: 1.8; margin-top: 40px; }
+.ph-meta b { color: var(--ink); font-weight: 400; }
+.ph-meta.r { text-align: right; }
+
+.filters { padding: 32px; display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(10, 10, 10, .85); backdrop-filter: blur(10px); z-index: 30; }
+.filters .chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); cursor: pointer; transition: .2s; }
+.filters .chip:hover { color: var(--ink); border-color: var(--ink); }
+.filters .chip.on { background: var(--acid); color: #000; border-color: var(--acid); }
+.filters .spacer { flex: 1; }
+.filters .view { display: flex; gap: 6px; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+.list { padding: 0 32px 80px; }
+.row { display: grid; grid-template-columns: 60px 1fr 200px 160px 120px 60px; gap: 32px; padding: 32px 0; border-bottom: 1px solid var(--line); align-items: center; cursor: pointer; position: relative; transition: .3s; }
+.row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--acid); transition: .3s; opacity: 0; }
+.row:hover { padding-left: 24px; }
+.row:hover::before { width: 3px; opacity: 1; }
+.row .n { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: .05em; }
+.row h3 { font-family: 'Instrument Serif', serif; font-size: clamp(36px, 4.5vw, 64px); font-weight: 400; line-height: .95; letter-spacing: -.02em; transition: .3s; }
+.row:hover h3 { color: var(--acid); font-style: italic; }
+.row h3 .sub { display: block; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--muted); font-style: normal; margin-top: 8px; letter-spacing: 0; font-weight: 400; }
+.row .tag-stack { display: flex; flex-direction: column; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.row .tag-stack b { color: var(--ink); font-weight: 400; }
+.row .year { font-family: 'Instrument Serif', serif; font-size: 42px; color: var(--muted); transition: .3s; }
+.row:hover .year { color: var(--ink); }
+.row .status { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; padding: 6px 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); text-align: center; }
+.row .status.live { color: var(--acid); border-color: rgba(214, 255, 61, .3); }
+.row .status.live::before { content: "● "; animation: pulse 1.5s infinite; }
+.row .status.nda { color: var(--warm); border-color: rgba(255, 90, 31, .3); }
+.row .arr { width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; font-size: 16px; transition: .3s; justify-self: end; }
+.row:hover .arr { background: var(--acid); color: #000; border-color: var(--acid); transform: rotate(-45deg); }
+
+.end { padding: 120px 32px; text-align: center; border-top: 1px solid var(--line); }
+.end h2 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 7vw, 96px); font-weight: 400; letter-spacing: -.02em; line-height: .95; margin-bottom: 24px; }
+.end h2 em { color: var(--acid); font-style: italic; }
+.end p { color: var(--muted); max-width: 520px; margin: 0 auto 32px; }
+.end .cta { display: inline-flex; align-items: center; gap: 12px; padding: 20px 32px; background: var(--acid); color: #000; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: .15em; font-weight: 600; transition: .2s; }
+.end .cta:hover { background: var(--ink); transform: translateY(-2px); }
+
+@media (max-width: 1000px) {
+  .row { grid-template-columns: 40px 1fr 60px; gap: 20px; }
+  .row .tag-stack, .row .status, .row .year { display: none; }
+}
+@media (max-width: 700px) {
+  .ph { grid-template-columns: 1fr; padding-top: 120px; }
+  .filters { flex-wrap: wrap; }
+}

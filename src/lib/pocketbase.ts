@@ -19,25 +19,25 @@ export async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T
   }
 }
 
-// ── Future shape (когда PB поднимется и коллекции созданы) ─────────────────
-//
-// export async function getCases(lang: 'ru' | 'en') {
-//   return safeFetch(
-//     () => pb.collection('cases').getFullList({ sort: '-year,-created', filter: `lang="${lang}"` }),
-//     []
-//   );
-// }
-//
-// export async function getCase(slug: string, lang: 'ru' | 'en') {
-//   return safeFetch(
-//     () => pb.collection('cases').getFirstListItem(`slug="${slug}" && lang="${lang}"`),
-//     null
-//   );
-// }
-//
-// export async function getDispatch(lang: 'ru' | 'en') {
-//   return safeFetch(
-//     () => pb.collection('dispatch').getFullList({ sort: '-published_at', filter: `lang="${lang}"` }),
-//     []
-//   );
-// }
+// ── Активные читалки из PB ────────────────────────────────────────────────
+// Если PB лёг/коллекция пуста — safeFetch вернёт fallback (статичные моки из
+// fixtures.ts), сайт не сломается на билде.
+
+import { cases as fixtureCases } from './fixtures';
+
+export async function getCases(lang: 'ru' | 'en' = 'ru') {
+  return safeFetch(
+    () => pb.collection('cases').getFullList({
+      sort: '-year,-created',
+      filter: `lang="${lang}"`,
+    }) as Promise<any[]>,
+    fixtureCases as any[],
+  );
+}
+
+export async function getCase(slug: string, lang: 'ru' | 'en' = 'ru') {
+  return safeFetch(
+    () => pb.collection('cases').getFirstListItem(`slug="${slug}" && lang="${lang}"`) as Promise<any>,
+    null,
+  );
+}
